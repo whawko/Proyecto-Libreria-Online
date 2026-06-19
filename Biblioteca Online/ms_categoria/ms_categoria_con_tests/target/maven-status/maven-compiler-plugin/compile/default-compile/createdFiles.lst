@@ -1,0 +1,7 @@
+cl\syst3m64\categorias\config\DataInitializer.class
+cl\syst3m64\categorias\model\Categoria.class
+cl\syst3m64\categorias\service\CategoriaService.class
+cl\syst3m64\categorias\repository\CategoriaRepository.class
+cl\syst3m64\categorias\exception\GlobalExceptionHandler.class
+cl\syst3m64\categorias\CategoriasApplication.class
+cl\syst3m64\categorias\controller\CategoriaController.class
