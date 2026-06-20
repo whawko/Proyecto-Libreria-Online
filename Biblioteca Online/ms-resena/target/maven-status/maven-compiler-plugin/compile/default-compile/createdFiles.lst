@@ -1,0 +1,13 @@
+com\libreria\resena\exception\ResenaNotFoundException.class
+com\libreria\resena\dto\ResenaRequestDTO.class
+com\libreria\resena\dto\UsuarioDTO.class
+com\libreria\resena\exception\GlobalExceptionHandler.class
+com\libreria\resena\dto\ResenaResponseDTO.class
+com\libreria\resena\dto\LibroDTO.class
+com\libreria\resena\feign\UsuarioFeignClient.class
+com\libreria\resena\repository\ResenaRepository.class
+com\libreria\resena\service\ResenaService.class
+com\libreria\resena\feign\LibroFeignClient.class
+com\libreria\resena\MsResenaApplication.class
+com\libreria\resena\model\Resena.class
+com\libreria\resena\controller\ResenaController.class

@@ -1,0 +1,10 @@
+cl\syst3m64\pago\dto\PagoRequestDTO.class
+cl\syst3m64\pago\controller\PagoController.class
+cl\syst3m64\pago\service\PagoService.class
+cl\syst3m64\pago\feign\VentaFeignClient.class
+cl\syst3m64\pago\PagoApplication.class
+cl\syst3m64\pago\repository\PagoRepository.class
+cl\syst3m64\pago\dto\PagoResponseDTO.class
+cl\syst3m64\pago\model\Pago.class
+cl\syst3m64\pago\dto\VentaResponseDTO.class
+cl\syst3m64\pago\exception\GlobalExceptionHandler.class

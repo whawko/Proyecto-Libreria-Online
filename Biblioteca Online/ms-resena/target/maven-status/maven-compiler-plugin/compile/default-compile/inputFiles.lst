@@ -1,0 +1,13 @@
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\controller\ResenaController.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\dto\LibroDTO.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\dto\ResenaRequestDTO.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\dto\ResenaResponseDTO.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\dto\UsuarioDTO.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\exception\GlobalExceptionHandler.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\exception\ResenaNotFoundException.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\feign\LibroFeignClient.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\feign\UsuarioFeignClient.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\model\Resena.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\MsResenaApplication.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\repository\ResenaRepository.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-resena\ms-resena\ms-resena\src\main\java\com\libreria\resena\service\ResenaService.java
