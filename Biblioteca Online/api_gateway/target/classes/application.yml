@@ -7,62 +7,94 @@ spring:
   cloud:
     gateway:
       routes:
-        # Microservicio de Libros
+        # Microservicio de Libros y Fotos
         - id: ms-libro
-          uri: ${MS_LIBRO_URI:http://localhost:8081}
+          uri: lb://ms-libro
           predicates:
-            - Path=/api/libros/**
+            - Path=/api/libros/**,/api/fotos/**
 
         # Microservicio de Categorias
         - id: ms-categoria
-          uri: ${MS_CATEGORIA_URI:http://localhost:8082}
+          uri: lb://ms-categoria
           predicates:
             - Path=/api/categorias/**
 
         # Microservicio de Estados
         - id: ms-estado
-          uri: ${MS_ESTADO_URI:http://localhost:8083}
+          uri: lb://ms-estado
           predicates:
             - Path=/api/estados/**
 
         # Microservicio de Usuarios
         - id: ms-usuario
-          uri: ${MS_USUARIO_URI:http://localhost:8084}
+          uri: lb://ms-usuario
           predicates:
             - Path=/api/usuarios/**
 
         # Microservicio de Ventas
         - id: ms-venta
-          uri: ${MS_VENTA_URI:http://localhost:8085}
+          uri: lb://ms-venta
           predicates:
             - Path=/api/ventas/**
 
         # Microservicio de Direcciones
         - id: ms-direccion
-          uri: ${MS_DIRECCION_URI:http://localhost:8086}
+          uri: lb://ms-direccion
           predicates:
             - Path=/api/direcciones/**
 
         # Microservicio de Reseñas
         - id: ms-resena
-          uri: ${MS_RESENA_URI:http://localhost:8087}
+          uri: lb://ms-resena
           predicates:
             - Path=/api/resenas/**
 
-        # Microservicio de Carrito (Nuevo)
+        # Microservicio de Carrito
         - id: ms-carrito
-          uri: ${MS_CARRITO_URI:http://localhost:8088}
+          uri: lb://ms-carrito
           predicates:
             - Path=/api/carrito/**
 
-        # Microservicio de Pago (Nuevo)
+        # Microservicio de Pago
         - id: ms-pago
-          uri: ${MS_PAGO_URI:http://localhost:8089}
+          uri: lb://ms-pago
           predicates:
             - Path=/api/pagos/**
 
-        # Microservicio de Envio (Nuevo)
+        # Microservicio de Envio
         - id: ms-envio
-          uri: ${MS_ENVIO_URI:http://localhost:8090}
+          uri: lb://ms-envio
           predicates:
             - Path=/api/envios/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: ms-libro
+        url: /api/libros/v3/api-docs
+      - name: ms-categoria
+        url: /api/categorias/v3/api-docs
+      - name: ms-estado
+        url: /api/estados/v3/api-docs
+      - name: ms-usuario
+        url: /api/usuarios/v3/api-docs
+      - name: ms-venta
+        url: /api/ventas/v3/api-docs
+      - name: ms-direccion
+        url: /api/direcciones/v3/api-docs
+      - name: ms-resena
+        url: /api/resenas/v3/api-docs
+      - name: ms-carrito
+        url: /api/carrito/v3/api-docs
+      - name: ms-pago
+        url: /api/pagos/v3/api-docs
+      - name: ms-envio
+        url: /api/envios/v3/api-docs
+

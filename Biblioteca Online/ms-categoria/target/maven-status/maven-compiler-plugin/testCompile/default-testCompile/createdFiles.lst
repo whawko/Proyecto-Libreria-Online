@@ -1,0 +1,4 @@
+cl\syst3m64\categorias\service\CategoriaServiceTest.class
+cl\syst3m64\categorias\controller\CategoriaControllerTest.class
+cl\syst3m64\categorias\EspeciesApplicationTests.class
+cl\syst3m64\categorias\repository\CategoriaRepositoryTest.class

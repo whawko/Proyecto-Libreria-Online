@@ -1,7 +1,6 @@
 package cl.syst3m64.estado.controller;
 
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,81 +11,88 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import cl.syst3m64.estado.model.Estado;
-import cl.syst3m64.estado.model.TipoEstado;
-import cl.syst3m64.estado.service.GlobalService;
+import cl.syst3m64.estado.dto.EstadoRequestDTO;
+import cl.syst3m64.estado.dto.EstadoResponseDTO;
+import cl.syst3m64.estado.dto.TipoEstadoRequestDTO;
+import cl.syst3m64.estado.dto.TipoEstadoResponseDTO;
+import cl.syst3m64.estado.service.EstadoService;
+import cl.syst3m64.estado.service.TipoEstadoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/estados")
 @RequiredArgsConstructor
 public class GlobalController {
-    private final GlobalService globalService;
-    
+
+    private final EstadoService estadoService;
+    private final TipoEstadoService tipoEstadoService;
+
     @GetMapping
-    public ResponseEntity<List<Estado>> obtenerEstados(){
-        return ResponseEntity.ok(globalService.obtenerTodosEstados());
+    public ResponseEntity<List<EstadoResponseDTO>> obtenerEstados() {
+        return ResponseEntity.ok(estadoService.obtenerTodosEstados());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Estado> obtenerEstadoPorId(@PathVariable Long id){
-        return globalService.obtenerEstadoPorId(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EstadoResponseDTO> obtenerEstadoPorId(@PathVariable Long id) {
+        return estadoService.obtenerEstadoPorId(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Estado> crearEstado(@RequestBody Estado estado){
-        return ResponseEntity.ok(globalService.guardarEstado(estado));
+    public ResponseEntity<EstadoResponseDTO> crearEstado(@Valid @RequestBody EstadoRequestDTO estadoDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(estadoService.guardarEstado(estadoDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarEstado(@PathVariable Long id){
-        if(globalService.obtenerEstadoPorId(id).isEmpty()){
+    public ResponseEntity<?> eliminarEstado(@PathVariable Long id) {
+        if (estadoService.obtenerEstadoPorId(id).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Estado no encontrado con ID: " + id);
         }
-        globalService.eliminarEstado(id);
+        estadoService.eliminarEstado(id);
         return ResponseEntity.ok("Estado eliminado exitosamente");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarEstado(@PathVariable Long id, @RequestBody Estado estado){
-        return ResponseEntity.ok(globalService.actualizarEstado(id, estado));
+    public ResponseEntity<EstadoResponseDTO> actualizarEstado(@PathVariable Long id, @Valid @RequestBody EstadoRequestDTO estadoDto) {
+        return ResponseEntity.ok(estadoService.actualizarEstado(id, estadoDto));
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // =======================================================================================================================
 
     @GetMapping("/tipos")
-    public ResponseEntity<?> obtenerTipoEstados(){
-        if(globalService.obtenerTipoEstados().isEmpty()){
+    public ResponseEntity<?> obtenerTipoEstados() {
+        List<TipoEstadoResponseDTO> tipos = tipoEstadoService.obtenerTipoEstados();
+        if (tipos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron tipos de estados");
         }
-        return ResponseEntity.ok(globalService.obtenerTipoEstados());
+        return ResponseEntity.ok(tipos);
     }
 
     @GetMapping("/tipos/{idTipo}")
-    public ResponseEntity<?> obtenerTipoEstadosPorId(@PathVariable Long idTipo){
-        if(globalService.obtenerTipoEstadosPorId(idTipo).isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tipo de estados Vacio con ID: " + idTipo);
-        }
-        return globalService.obtenerTipoEstadosPorId(idTipo).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<TipoEstadoResponseDTO> obtenerTipoEstadosPorId(@PathVariable Long idTipo) {
+        return tipoEstadoService.obtenerTipoEstadosPorId(idTipo)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/tipos")
-    public ResponseEntity<TipoEstado> crearTipoEstado(@RequestBody TipoEstado tipoEstado){
-        return ResponseEntity.ok(globalService.guardarTipoEstado(tipoEstado));
+    public ResponseEntity<TipoEstadoResponseDTO> crearTipoEstado(@Valid @RequestBody TipoEstadoRequestDTO tipoEstadoDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(tipoEstadoService.guardarTipoEstado(tipoEstadoDto));
     }
 
     @DeleteMapping("/tipos/{idTipo}")
-    public ResponseEntity<?> eliminarTipoEstado(@PathVariable Long idTipo){
-        if(globalService.obtenerTipoEstadosPorId(idTipo).isEmpty()){
+    public ResponseEntity<?> eliminarTipoEstado(@PathVariable Long idTipo) {
+        if (tipoEstadoService.obtenerTipoEstadosPorId(idTipo).isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tipo de estado no encontrado con ID: " + idTipo);
         }
-        globalService.eliminarTipoEstado(idTipo);
+        tipoEstadoService.eliminarTipoEstado(idTipo);
         return ResponseEntity.ok("Tipo de estado eliminado exitosamente");
     }
 
     @PutMapping("/tipos/{idTipo}")
-    public ResponseEntity<?> actualizarTipoEstado(@PathVariable Long idTipo, @RequestBody TipoEstado tipoEstado){
-        return ResponseEntity.ok(globalService.actualizarTipoEstado(idTipo, tipoEstado));
+    public ResponseEntity<TipoEstadoResponseDTO> actualizarTipoEstado(@PathVariable Long idTipo, @Valid @RequestBody TipoEstadoRequestDTO tipoEstadoDto) {
+        return ResponseEntity.ok(tipoEstadoService.actualizarTipoEstado(idTipo, tipoEstadoDto));
     }
 }

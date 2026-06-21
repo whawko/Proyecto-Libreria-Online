@@ -23,36 +23,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cl.syst3m64.libros.model.Foto;
-import cl.syst3m64.libros.model.Libro;
+import cl.syst3m64.libros.dto.FotoRequestDTO;
+import cl.syst3m64.libros.dto.FotoResponseDTO;
 import cl.syst3m64.libros.service.FotoService;
 
-// carga la capa web -> FotoController como GlobalExceptionHandler
-// no tenemos acceso a MySQL, ni JPA, ni repository ni services reales
-// no levanta un HTTP real (simula las peticiones)
 @WebMvcTest(FotoController.class)
 @DisplayName("Tests del FotoController con MockMvc")
 public class FotoControllerTest {
 
-    // crear un mock de mvc para simular peticiones HTTP
     @Autowired
     private MockMvc mockMvc;
 
-    // integrar un mock simulado del service
     @MockitoBean
     private FotoService fotoService;
 
-    // convierte los objetos de JAVA a archivos JSON para los endpoints
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    // TEST UNIT
 
     // GET --> /api/fotos
     @Test
     @DisplayName("GET /api/fotos debe retornar 200 con la lista de fotos")
     void obtenerTodasLasFotos_debeRetornar200ConLista() throws Exception {
-        Libro libro = new Libro(1L, "El Quijote", "Novela clasica", "Cervantes", "978-1234", 15000.0f, "1605", "Planeta", 1L, 1L);
-        Foto foto = new Foto(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", libro);
+        FotoResponseDTO foto = new FotoResponseDTO(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", 1L);
 
         when(fotoService.obtenerFotos()).thenReturn(List.of(foto));
 
@@ -68,8 +59,7 @@ public class FotoControllerTest {
     @Test
     @DisplayName("GET /api/fotos/{id} debe retornar 200 con la foto cuando existe")
     void obtenerFotoPorId_debeRetornar200_cuandoExiste() throws Exception {
-        Libro libro = new Libro(1L, "El Quijote", "Novela clasica", "Cervantes", "978-1234", 15000.0f, "1605", "Planeta", 1L, 1L);
-        Foto foto = new Foto(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", libro);
+        FotoResponseDTO foto = new FotoResponseDTO(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", 1L);
 
         when(fotoService.obtenerPorId(1L)).thenReturn(Optional.of(foto));
 
@@ -85,11 +75,10 @@ public class FotoControllerTest {
     @Test
     @DisplayName("POST /api/fotos/libro/{idLibro} debe retornar 200 con la foto guardada")
     void guardarFoto_debeRetornar200_cuandoDatosValidos() throws Exception {
-        Libro libro = new Libro(1L, "El Quijote", "Novela clasica", "Cervantes", "978-1234", 15000.0f, "1605", "Planeta", 1L, 1L);
-        Foto request = new Foto(null, "http://imagen.com/foto2.jpg", "foto2", "NO", null);
-        Foto response = new Foto(2L, "http://imagen.com/foto2.jpg", "foto2", "NO", libro);
+        FotoRequestDTO request = new FotoRequestDTO("http://imagen.com/foto2.jpg", "foto2", "NO");
+        FotoResponseDTO response = new FotoResponseDTO(2L, "http://imagen.com/foto2.jpg", "foto2", "NO", 1L);
 
-        when(fotoService.guardarFoto(any(Foto.class), eq(1L))).thenReturn(response);
+        when(fotoService.guardarFoto(any(FotoRequestDTO.class), eq(1L))).thenReturn(response);
 
         mockMvc.perform(post("/api/fotos/libro/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,11 +93,10 @@ public class FotoControllerTest {
     @Test
     @DisplayName("PUT /api/fotos/{id} debe retornar 200 con la foto actualizada")
     void actualizarFoto_debeRetornar200_cuandoExiste() throws Exception {
-        Libro libro = new Libro(1L, "El Quijote", "Novela clasica", "Cervantes", "978-1234", 15000.0f, "1605", "Planeta", 1L, 1L);
-        Foto request = new Foto(null, "http://imagen.com/foto-actualizada.jpg", "foto-nueva", "SI", null);
-        Foto response = new Foto(1L, "http://imagen.com/foto-actualizada.jpg", "foto-nueva", "SI", libro);
+        FotoRequestDTO request = new FotoRequestDTO("http://imagen.com/foto-actualizada.jpg", "foto-nueva", "SI");
+        FotoResponseDTO response = new FotoResponseDTO(1L, "http://imagen.com/foto-actualizada.jpg", "foto-nueva", "SI", 1L);
 
-        when(fotoService.actualizarFoto(eq(1L), any(Foto.class))).thenReturn(response);
+        when(fotoService.actualizarFoto(eq(1L), any(FotoRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/fotos/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -122,8 +110,7 @@ public class FotoControllerTest {
     @Test
     @DisplayName("DELETE /api/fotos/{id} debe retornar 200 cuando la foto existe")
     void eliminarFoto_debeRetornar200_cuandoExiste() throws Exception {
-        Libro libro = new Libro(1L, "El Quijote", "Novela clasica", "Cervantes", "978-1234", 15000.0f, "1605", "Planeta", 1L, 1L);
-        Foto foto = new Foto(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", libro);
+        FotoResponseDTO foto = new FotoResponseDTO(1L, "http://imagen.com/foto1.jpg", "foto1", "SI", 1L);
 
         when(fotoService.obtenerPorId(1L)).thenReturn(Optional.of(foto));
 

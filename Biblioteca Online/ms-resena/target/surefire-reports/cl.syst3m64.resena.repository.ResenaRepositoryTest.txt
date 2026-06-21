@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: cl.syst3m64.resena.repository.ResenaRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.988 s -- in cl.syst3m64.resena.repository.ResenaRepositoryTest

@@ -2,8 +2,10 @@ package cl.syst3m64.libros;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class LibrosApplicationTests {
 
 	@Test
@@ -11,3 +13,4 @@ class LibrosApplicationTests {
 	}
 
 }
+

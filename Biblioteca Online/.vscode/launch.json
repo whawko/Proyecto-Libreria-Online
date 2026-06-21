@@ -2,13 +2,21 @@
     "configurations": [
         {
             "type": "java",
+            "name": "EstadoApplication",
+            "request": "launch",
+            "mainClass": "cl.syst3m64.estado.EstadoApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-EurekaApplication<eureka_server>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "cl.syst3m64.eureka.EurekaApplication",
             "projectName": "eureka_server",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=61289 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=eureka_server"
         },
         {
             "type": "java",
@@ -17,6 +25,100 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "cl.syst3m64.carrito.CarritoApplication",
             "projectName": "ms_carrito",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62063 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ms_carrito"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EstadoApplication<estado>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.estado.EstadoApplication",
+            "projectName": "estado",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=61283 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=estado"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CategoriasApplication<ms_categoria>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.categorias.CategoriasApplication",
+            "projectName": "ms_categoria",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=50214 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ms_categoria"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UsuarioApplication<usuario>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.usuario.UsuarioApplication",
+            "projectName": "usuario",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-LibrosApplication<ms_libro>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.libros.LibrosApplication",
+            "projectName": "ms_libro",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=58875 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ms_libro"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DireccionApplication<direccion>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.direccion.DireccionApplication",
+            "projectName": "direccion",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PagoApplication<pago>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.pago.PagoApplication",
+            "projectName": "pago",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-VentaApplication<venta>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.venta.VentaApplication",
+            "projectName": "venta",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-EnvioApplication<envio>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.syst3m64.envio.EnvioApplication",
+            "projectName": "envio",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsResenaApplication<ms-resena>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.libreria.resena.MsResenaApplication",
+            "projectName": "ms-resena",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

@@ -14,9 +14,9 @@ public class UsuarioResponseDTO {
     private String rut;
     private String nombres;
     private String apellidos;
-    private String fecha_nacimiento;
+    private String fechaNacimiento;
     private String correo;
     private String clave;   
-    private Rol id_rol;
+    private Rol idRol;
     private Long idEstado;
 }

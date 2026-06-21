@@ -32,8 +32,8 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String apellidos;
 
-    @Column(nullable = false, length = 10)
-    private String fecha_nacimiento;
+    @Column(name = "fecha_nacimiento", nullable = false, length = 10)
+    private String fechaNacimiento;
 
     @Column(length = 100)
     private String correo;

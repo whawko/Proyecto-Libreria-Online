@@ -1,0 +1,8 @@
+cl\syst3m64\direccion\service\DireccionServiceTest.class
+cl\syst3m64\direccion\repository\DireccionRepositoryTest.class
+cl\syst3m64\direccion\service\RegionServiceTest.class
+cl\syst3m64\direccion\controller\GlobalControllerTest.class
+cl\syst3m64\direccion\DireccionApplicationTests.class
+cl\syst3m64\direccion\repository\ComunaRepositoryTest.class
+cl\syst3m64\direccion\service\ComunaServiceTest.class
+cl\syst3m64\direccion\repository\RegionRepositoryTest.class

@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cl.syst3m64.libros.model.Foto;
+import cl.syst3m64.libros.dto.FotoRequestDTO;
+import cl.syst3m64.libros.dto.FotoResponseDTO;
 import cl.syst3m64.libros.service.FotoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,33 +25,29 @@ import lombok.RequiredArgsConstructor;
 public class FotoController {
     private final FotoService fotoService;
 
-   @GetMapping
+    @GetMapping
     public ResponseEntity<?> obtenerTodasLasFotos(){
-
-        List<Foto> fotos = fotoService.obtenerFotos();
-
+        List<FotoResponseDTO> fotos = fotoService.obtenerFotos();
         if(fotos.isEmpty()){
             return ResponseEntity.ok("No hay fotos aún");
         }
-
         return ResponseEntity.ok(fotos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerFotoPorId(@PathVariable Long id){
+    public ResponseEntity<FotoResponseDTO> obtenerFotoPorId(@PathVariable Long id){
         return fotoService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new RuntimeException("Foto no encontrada"));
     }
 
     @PostMapping("/libro/{idLibro}")
-    public ResponseEntity<?> guardarFoto(@Valid @RequestBody Foto foto, @PathVariable Long idLibro){
-
+    public ResponseEntity<FotoResponseDTO> guardarFoto(@Valid @RequestBody FotoRequestDTO foto, @PathVariable Long idLibro){
         return ResponseEntity.ok(fotoService.guardarFoto(foto, idLibro));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarFoto(@PathVariable Long id, @Valid @RequestBody Foto foto){
+    public ResponseEntity<FotoResponseDTO> actualizarFoto(@PathVariable Long id, @Valid @RequestBody FotoRequestDTO foto){
         return ResponseEntity.ok(fotoService.actualizarFoto(id, foto));
     }
 

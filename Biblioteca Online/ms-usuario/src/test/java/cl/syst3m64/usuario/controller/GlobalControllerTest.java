@@ -22,37 +22,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-
+import cl.syst3m64.usuario.dto.UsuarioRequestDTO;
 import cl.syst3m64.usuario.dto.UsuarioResponseDTO;
+import cl.syst3m64.usuario.dto.RolRequestDTO;
+import cl.syst3m64.usuario.dto.RolResponseDTO;
 import cl.syst3m64.usuario.model.Rol;
 import cl.syst3m64.usuario.model.Usuario;
-import cl.syst3m64.usuario.service.GlobalService;
+import cl.syst3m64.usuario.service.UsuarioService;
+import cl.syst3m64.usuario.service.RolService;
 import tools.jackson.databind.ObjectMapper;
 
-// carga la capa web -> GlobalController como GlobalExceptionHandler
-// no tenemos acceso a MySQL, ni JPA, ni repository ni services reales
-// no levanta un HTTP real (simula las peticiones)
 @WebMvcTest(GlobalController.class)
 @DisplayName("Tests del GlobalController con MockMvc")
 public class GlobalControllerTest {
 
-    // crear un mock de mvc para simular peticiones HTTP
     @Autowired
     private MockMvc mockMvc;
 
-    // integrar un mock simulado del service
     @MockitoBean
-    private GlobalService usuarioService;
+    private UsuarioService usuarioService;
 
-    // convierte los objetos de JAVA a archivos JSON para los endpoints
+    @MockitoBean
+    private RolService rolService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // TEST UNIT
-
-    // GET --> /api/usuarios
     @Test
-    @DisplayName("GET /api/usuarios debe retornar un JSON con la lista de usuarios y el codigo 200")
+    @DisplayName("GET /api/usuarios debe retornar un JSON con la lista de usuarios and el codigo 200")
     void obtenerTodos_debeRetornar200ConListaDeUsuarios() throws Exception {
         Rol rol = new Rol(1L, "ADMIN");
         UsuarioResponseDTO dto = new UsuarioResponseDTO(1L, "12345678-9", "Juan", "Perez", "01-01-1990", "juan@mail.com", "clave123", rol, 1L);
@@ -68,7 +64,6 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$[0].nombres").value("Juan"));
     }
 
-    // GET --> /api/usuarios/{id}
     @Test
     @DisplayName("GET /api/usuarios/{id} debe retornar 200 con el usuario cuando existe")
     void obtenerPorId_debeRetornar200_cuandoExiste() throws Exception {
@@ -85,7 +80,6 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.rut").value("12345678-9"));
     }
 
-    // GET --> /api/usuarios/{id} cuando no existe
     @Test
     @DisplayName("GET /api/usuarios/{id} debe retornar 404 cuando el usuario no existe")
     void obtenerPorId_debeRetornar404_cuandoNoExiste() throws Exception {
@@ -97,15 +91,14 @@ public class GlobalControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // POST --> /api/usuarios
     @Test
     @DisplayName("POST /api/usuarios debe retornar 201 con el usuario creado")
     void crearUsuario_debeRetornar201_cuandoDatosValidos() throws Exception {
         Rol rol = new Rol(1L, "ADMIN");
-        Usuario request = new Usuario(null, "12345678-9", "Juan", "Perez", "01-01-1990", "juan@mail.com", "clave123", rol, 1L);
+        UsuarioRequestDTO request = new UsuarioRequestDTO("12345678-9", "Juan", "Perez", "01-01-1990", "juan@mail.com", "clave123", 1L, 1L);
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "12345678-9", "Juan", "Perez", "01-01-1990", "juan@mail.com", "clave123", rol, 1L);
 
-        when(usuarioService.crearUsuario(any(Usuario.class))).thenReturn(response);
+        when(usuarioService.crearUsuario(any(UsuarioRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -116,15 +109,14 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.rut").value("12345678-9"));
     }
 
-    // PUT --> /api/usuarios/{id}
     @Test
     @DisplayName("PUT /api/usuarios/{id} debe retornar 200 con el usuario actualizado")
     void actualizarUsuario_debeRetornar200_cuandoExiste() throws Exception {
         Rol rol = new Rol(1L, "ADMIN");
-        Usuario request = new Usuario(null, "12345678-9", "Juan Modificado", "Perez", "01-01-1990", "juan@mail.com", "clave123", rol, 1L);
+        UsuarioRequestDTO request = new UsuarioRequestDTO("12345678-9", "Juan Modificado", "Perez", "01-01-1990", "juan@mail.com", "clave123", 1L, 1L);
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "12345678-9", "Juan Modificado", "Perez", "01-01-1990", "juan@mail.com", "clave123", rol, 1L);
 
-        when(usuarioService.actualizarUsuario(eq(1L), any(Usuario.class))).thenReturn(response);
+        when(usuarioService.actualizarUsuario(eq(1L), any(UsuarioRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/usuarios/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +126,6 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.nombres").value("Juan Modificado"));
     }
 
-    // DELETE --> /api/usuarios/{id}
     @Test
     @DisplayName("DELETE /api/usuarios/{id} debe retornar 200 cuando el usuario existe")
     void eliminarUsuario_debeRetornar200_cuandoExiste() throws Exception {
@@ -148,13 +139,12 @@ public class GlobalControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // GET --> /api/usuarios/roles
     @Test
-    @DisplayName("GET /api/usuarios/roles debe retornar 200 con la lista de roles")
+    @DisplayName("GET /api/usuarios/roles debe retornar 200 con la lista de roles DTO")
     void obtenerRoles_debeRetornar200ConListaDeRoles() throws Exception {
-        Rol rol = new Rol(1L, "ADMIN");
+        RolResponseDTO rol = new RolResponseDTO(1L, "ADMIN");
 
-        when(usuarioService.obtenerTodosLosRoles()).thenReturn(List.of(rol));
+        when(rolService.obtenerTodosLosRoles()).thenReturn(List.of(rol));
 
         mockMvc.perform(get("/api/usuarios/roles")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -163,14 +153,13 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$[0].nombre").value("ADMIN"));
     }
 
-    // POST --> /api/usuarios/roles
     @Test
-    @DisplayName("POST /api/usuarios/roles debe retornar 201 con el rol creado")
+    @DisplayName("POST /api/usuarios/roles debe retornar 201 con el rol DTO creado")
     void crearRol_debeRetornar201_cuandoDatosValidos() throws Exception {
-        Rol request = new Rol(null, "CLIENTE");
-        Rol response = new Rol(2L, "CLIENTE");
+        RolRequestDTO request = new RolRequestDTO("CLIENTE");
+        RolResponseDTO response = new RolResponseDTO(2L, "CLIENTE");
 
-        when(usuarioService.crearRol(any(Rol.class))).thenReturn(response);
+        when(rolService.crearRol(any(RolRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/usuarios/roles")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -180,4 +169,5 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.nombre").value("CLIENTE"));
     }
+
 }

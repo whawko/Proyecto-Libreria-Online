@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cl.syst3m64</groupId>
+	<artifactId>biblioteca-online-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>biblioteca-online-parent</name>
+	<description>Parent POM for Online Bookstore Microservices</description>
+
+	<modules>
+		<module>eureka_server</module>
+		<module>api_gateway</module>
+		<module>ms-usuario</module>
+		<module>ms-libro</module>
+		<module>ms-categoria</module>
+		<module>ms-estado</module>
+		<module>ms-resena</module>
+		<module>ms-direccion</module>
+		<module>ms-venta</module>
+		<module>ms-carrito</module>
+		<module>ms-pago</module>
+		<module>ms-envio</module>
+	</modules>
+</project>
+

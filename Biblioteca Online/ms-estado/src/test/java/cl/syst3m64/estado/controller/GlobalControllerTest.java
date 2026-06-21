@@ -24,38 +24,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cl.syst3m64.estado.model.Estado;
-import cl.syst3m64.estado.model.TipoEstado;
-import cl.syst3m64.estado.service.GlobalService;
+import cl.syst3m64.estado.dto.EstadoRequestDTO;
+import cl.syst3m64.estado.dto.EstadoResponseDTO;
+import cl.syst3m64.estado.dto.TipoEstadoRequestDTO;
+import cl.syst3m64.estado.dto.TipoEstadoResponseDTO;
+import cl.syst3m64.estado.service.EstadoService;
+import cl.syst3m64.estado.service.TipoEstadoService;
 
-// carga la capa web -> GlobalController como GlobalExceptionHandler
-// no tenemos acceso a MySQL, ni JPA, ni repository ni services reales
-// no levanta un HTTP real (simula las peticiones)
 @WebMvcTest(GlobalController.class)
 @DisplayName("Tests del GlobalController con MockMvc")
 public class GlobalControllerTest {
 
-    // crear un mock de mvc para simular peticiones HTTP
     @Autowired
     private MockMvc mockMvc;
 
-    // integrar un mock simulado del service
     @MockitoBean
-    private GlobalService globalService;
+    private EstadoService estadoService;
 
-    // convierte los objetos de JAVA a archivos JSON para los endpoints
+    @MockitoBean
+    private TipoEstadoService tipoEstadoService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // TEST UNIT
-
-    // GET --> /api/estados
     @Test
     @DisplayName("GET /api/estados debe retornar un JSON con la lista de estados y el codigo 200")
     void obtenerEstados_debeRetornar200ConListaDeEstados() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
-        Estado estado = new Estado(1L, "ACTIVO", "Venta activa", tipoVenta);
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
+        EstadoResponseDTO estado = new EstadoResponseDTO(1L, "ACTIVO", "Venta activa", tipoVenta);
 
-        when(globalService.obtenerTodosEstados()).thenReturn(List.of(estado));
+        when(estadoService.obtenerTodosEstados()).thenReturn(List.of(estado));
 
         mockMvc.perform(get("/api/estados")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -66,14 +63,13 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$[0].descripcion").value("Venta activa"));
     }
 
-    // GET --> /api/estados/{id}
     @Test
     @DisplayName("GET /api/estados/{id} debe retornar 200 con el estado cuando existe")
     void obtenerEstadoPorId_debeRetornar200_cuandoExiste() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
-        Estado estado = new Estado(1L, "ACTIVO", "Venta activa", tipoVenta);
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
+        EstadoResponseDTO estado = new EstadoResponseDTO(1L, "ACTIVO", "Venta activa", tipoVenta);
 
-        when(globalService.obtenerEstadoPorId(1L)).thenReturn(Optional.of(estado));
+        when(estadoService.obtenerEstadoPorId(1L)).thenReturn(Optional.of(estado));
 
         mockMvc.perform(get("/api/estados/1")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -83,11 +79,10 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.nombre").value("ACTIVO"));
     }
 
-    // GET --> /api/estados/{id} cuando no existe
     @Test
     @DisplayName("GET /api/estados/{id} debe retornar 404 cuando el estado no existe")
     void obtenerEstadoPorId_debeRetornar404_cuandoNoExiste() throws Exception {
-        when(globalService.obtenerEstadoPorId(99L)).thenReturn(Optional.empty());
+        when(estadoService.obtenerEstadoPorId(99L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/estados/99")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -95,48 +90,45 @@ public class GlobalControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // POST --> /api/estados
     @Test
-    @DisplayName("POST /api/estados debe retornar 200 con el estado creado")
-    void crearEstado_debeRetornar200_cuandoDatosValidos() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
-        Estado request = new Estado(null, "CANCELADA", "Venta cancelada", tipoVenta);
-        Estado response = new Estado(2L, "CANCELADA", "Venta cancelada", tipoVenta);
+    @DisplayName("POST /api/estados debe retornar 201 con el estado creado")
+    void crearEstado_debeRetornar21_cuandoDatosValidos() throws Exception {
+        EstadoRequestDTO request = new EstadoRequestDTO("CANCELADA", "Venta cancelada", 1L);
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
+        EstadoResponseDTO response = new EstadoResponseDTO(2L, "CANCELADA", "Venta cancelada", tipoVenta);
 
-        when(globalService.guardarEstado(any(Estado.class))).thenReturn(response);
+        when(estadoService.guardarEstado(any(EstadoRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/estados")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.nombre").value("CANCELADA"));
     }
 
-    // DELETE --> /api/estados/{id}
     @Test
     @DisplayName("DELETE /api/estados/{id} debe retornar 200 cuando el estado existe")
     void eliminarEstado_debeRetornar200_cuandoExiste() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
-        Estado estado = new Estado(1L, "ACTIVO", "Venta activa", tipoVenta);
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
+        EstadoResponseDTO estado = new EstadoResponseDTO(1L, "ACTIVO", "Venta activa", tipoVenta);
 
-        when(globalService.obtenerEstadoPorId(1L)).thenReturn(Optional.of(estado));
+        when(estadoService.obtenerEstadoPorId(1L)).thenReturn(Optional.of(estado));
 
         mockMvc.perform(delete("/api/estados/1"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
-    // PUT --> /api/estados/{id}
     @Test
     @DisplayName("PUT /api/estados/{id} debe retornar 200 con el estado actualizado")
     void actualizarEstado_debeRetornar200_cuandoExiste() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
-        Estado request = new Estado(null, "ACTIVO_MODIFICADO", "Descripcion modificada", tipoVenta);
-        Estado response = new Estado(1L, "ACTIVO_MODIFICADO", "Descripcion modificada", tipoVenta);
+        EstadoRequestDTO request = new EstadoRequestDTO("ACTIVO_MODIFICADO", "Descripcion modificada", 1L);
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
+        EstadoResponseDTO response = new EstadoResponseDTO(1L, "ACTIVO_MODIFICADO", "Descripcion modificada", tipoVenta);
 
-        when(globalService.actualizarEstado(eq(1L), any(Estado.class))).thenReturn(response);
+        when(estadoService.actualizarEstado(eq(1L), any(EstadoRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/estados/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -146,13 +138,12 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$.nombre").value("ACTIVO_MODIFICADO"));
     }
 
-    // GET --> /api/estados/tipos
     @Test
     @DisplayName("GET /api/estados/tipos debe retornar 200 con la lista de tipos de estado")
     void obtenerTipoEstados_debeRetornar200ConLista() throws Exception {
-        TipoEstado tipoVenta = new TipoEstado(1L, "VENTA");
+        TipoEstadoResponseDTO tipoVenta = new TipoEstadoResponseDTO(1L, "VENTA");
 
-        when(globalService.obtenerTipoEstados()).thenReturn(List.of(tipoVenta));
+        when(tipoEstadoService.obtenerTipoEstados()).thenReturn(List.of(tipoVenta));
 
         mockMvc.perform(get("/api/estados/tipos")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -161,20 +152,19 @@ public class GlobalControllerTest {
                 .andExpect(jsonPath("$[0].nombre").value("VENTA"));
     }
 
-    // POST --> /api/estados/tipos
     @Test
-    @DisplayName("POST /api/estados/tipos debe retornar 200 con el tipo de estado creado")
-    void crearTipoEstado_debeRetornar200_cuandoDatosValidos() throws Exception {
-        TipoEstado request = new TipoEstado(null, "ARRIENDO");
-        TipoEstado response = new TipoEstado(2L, "ARRIENDO");
+    @DisplayName("POST /api/estados/tipos debe retornar 201 con el tipo de estado creado")
+    void crearTipoEstado_debeRetornar201_cuandoDatosValidos() throws Exception {
+        TipoEstadoRequestDTO request = new TipoEstadoRequestDTO("ARRIENDO");
+        TipoEstadoResponseDTO response = new TipoEstadoResponseDTO(2L, "ARRIENDO");
 
-        when(globalService.guardarTipoEstado(any(TipoEstado.class))).thenReturn(response);
+        when(tipoEstadoService.guardarTipoEstado(any(TipoEstadoRequestDTO.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/estados/tipos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.nombre").value("ARRIENDO"));
     }

@@ -20,10 +20,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import cl.syst3m64.libros.dto.LibroRequestDTO;
 import cl.syst3m64.libros.dto.LibroResponseDTO;
-import cl.syst3m64.libros.feign.CategoriaFeignClient;
-import cl.syst3m64.libros.feign.EstadoFeignClient;
+import cl.syst3m64.libros.dto.CategoriaDTO;
+import cl.syst3m64.libros.dto.EstadoDTO;
+import cl.syst3m64.libros.client.CategoriaFeignClient;
+import cl.syst3m64.libros.client.EstadoFeignClient;
 import cl.syst3m64.libros.model.Libro;
 import cl.syst3m64.libros.repository.LibroRepository;
+import cl.syst3m64.libros.service.impl.LibroServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Test Unit de LibroService")
@@ -42,7 +45,8 @@ public class LibroServiceTest {
 
     // crear una instancia REAL del LibroService con los mocks inyectados
     @InjectMocks
-    private LibroService libroService;
+    private LibroServiceImpl libroService;
+
 
     // Variables para datos de pruebas reutilizables entre TEST
     private Libro libroEjemplo;
@@ -112,8 +116,8 @@ public class LibroServiceTest {
     @DisplayName("guardarLibro() retorna el libro guardado con ID asignado")
     void guardarLibro_debeRetornarLibroGuardado() {
         // simular que los feign retornan objetos validos (categoria y estado existen)
-        when(categoriaFeignClient.obtenerCategoriaPorId(1L)).thenReturn(new Object());
-        when(estadoFeignClient.obtenerEstadoPorId(1L)).thenReturn(new Object());
+        when(categoriaFeignClient.obtenerCategoriaPorId(1L)).thenReturn(new CategoriaDTO());
+        when(estadoFeignClient.obtenerEstadoPorId(1L)).thenReturn(new EstadoDTO());
         when(libroRepository.save(any(Libro.class))).thenReturn(libroEjemplo);
 
         LibroResponseDTO resultado = libroService.guardarLibro(requestEjemplo);

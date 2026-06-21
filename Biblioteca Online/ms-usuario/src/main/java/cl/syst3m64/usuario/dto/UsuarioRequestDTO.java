@@ -1,12 +1,10 @@
 package cl.syst3m64.usuario.dto;
 
-import cl.syst3m64.usuario.model.Rol;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @AllArgsConstructor
@@ -23,7 +21,7 @@ public class UsuarioRequestDTO {
     private String apellidos;
 
     @NotBlank(message = "La fecha de nacimiento es obligatoria")
-    private String fecha_nacimiento;
+    private String fechaNacimiento;
 
     @NotBlank(message = "El correo es obligatorio")
     private String correo;
@@ -31,9 +29,9 @@ public class UsuarioRequestDTO {
     @NotBlank(message = "La clave es obligatoria")
     private String clave;
 
-    @NotBlank(message = "El rol es obligatorio")
-    private Rol id_rol;
+    @NotNull(message = "El rol es obligatorio")
+    private Long idRol;
 
-    @Size(max = 50)
     private Long idEstado;
 }
+
