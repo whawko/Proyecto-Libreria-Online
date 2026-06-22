@@ -30,11 +30,11 @@ public class VentaRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    // Variables para datos insertados en memoria antes de cada test
+    
     private Venta venta1;
     private Venta venta2;
 
-    // insertar datos antes de cada test
+    
     @BeforeEach
     void setUp() {
         venta1 = entityManager.persistAndFlush(
@@ -43,7 +43,7 @@ public class VentaRepositoryTest {
                 new Venta(null, "2024-02-20", new BigDecimal("75000"), 1L, 3L));
     }
 
-    // TEST para findAll() -- Heredado del JPARepository
+    
     @Test
     @DisplayName("findAll() debe retornar todas las ventas insertadas")
     void findAll_debeRetornarTodasLasVentas() {
@@ -53,7 +53,7 @@ public class VentaRepositoryTest {
         assertEquals(2, ventas.size());
     }
 
-    // TEST para findById()
+    
     @Test
     @DisplayName("findById() debe retornar Optional con la venta cuando existe")
     void findById_debeRetornarVenta_cuandoExiste() {
@@ -72,7 +72,7 @@ public class VentaRepositoryTest {
         assertFalse(resultado.isPresent());
     }
 
-    // TEST para save()
+    
     @Test
     @DisplayName("save() debe guardar y retornar la venta con ID generado")
     void save_debeGuardarVentaCorrectamente() {
@@ -85,7 +85,7 @@ public class VentaRepositoryTest {
         assertEquals(new BigDecimal("30000"), guardada.getTotal());
     }
 
-    // TEST para deleteById()
+    
     @Test
     @DisplayName("deleteById() debe eliminar la venta correctamente")
     void deleteById_debeEliminarVenta() {
