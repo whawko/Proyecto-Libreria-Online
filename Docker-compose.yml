@@ -1,0 +1,252 @@
+services:
+ 
+  #Servicio 1: levantar MySQL
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-microservicios
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: bd_estados
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-u","root", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - microservicios-net
+ 
+  #Servicio 2: Eureka
+  eureka-server:
+    build:
+      context: ./eurekaserver
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  #Servicio 3: categoria
+  ms-categoria:
+    build:
+      context: ./ms-categoria
+      dockerfile: Dockerfile
+    container_name: ms-categoria
+    volumes:
+      - ./logs/ms-categoria:/app/logs
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      microservicios-net:
+        - microservicios-net
+
+ 
+  #Servicio 4: usuario
+  ms-usuario:
+    build:
+      context: ./ms-usuario
+      dockerfile: Dockerfile
+    container_name: ms-usuario
+    volumes:
+      - ./logs/ms-usuario:/app/logs
+    ports:
+      - "8084:8084"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      microservicios-net:
+        - microservicios-net
+  #Servicio 5: libro
+  ms-libro:
+    build:
+      context: ./ms-libro
+      dockerfile: Dockerfile
+    container_name: ms-libro
+    volumes:
+      - ./logs/ms-libro:/app/logs
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      microservicios-net:
+        - microservicios-net
+      
+  #Servicio 6: direccion
+  
+  ms-direccion:
+    build:
+      context: ./ms-direccion
+      dockerfile: Dockerfile
+    container_name: ms-direccion
+    volumes:
+      - ./logs/ms-direccion:/app/logs
+    ports:
+      - "8086:8086"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      microservicios-net:
+        - microservicios-net
+ 
+  #Servicio 7: carrito
+  ms-carrito:
+    build:
+      context: ./ms-carrito
+      dockerfile: Dockerfile
+    container_name: ms-carrito
+    volumes:
+      - ./logs/ms-carrito:/app/logs
+    ports:
+      - "8088:8088"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  #Servicio 8: venta
+  ms-venta:
+    build:
+      context: ./ms-venta
+      dockerfile: Dockerfile
+    container_name: ms-venta
+    volumes:
+      - ./logs/ms-venta:/app/logs
+    ports:
+      - "8085:8085"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  #Servicio 9: pago
+  ms-pago:
+    build:
+      context: ./ms-pago
+      dockerfile: Dockerfile
+    container_name: ms-pago
+    volumes:
+      - ./logs/ms-pago:/app/logs
+    ports:
+      - "8089:8089"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      microservicios-net:
+        - microservicios-net
+  #Servicio 10: envio
+  ms-envio:
+    build:
+      context: ./ms-envio
+      dockerfile: Dockerfile
+    container_name: ms-envio
+    volumes:
+      - ./logs/ms-envio:/app/logs
+    ports:
+      - "8090:8090"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+
+      #Servicio 10: resena
+  ms-resena:
+    build:
+      context: ./ms-resena
+      dockerfile: Dockerfile
+    container_name: ms-resena
+    volumes:
+      - ./logs/ms-resena:/app/logs
+    ports:
+      - "8087:8087"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  #Servicio 11: api-gateway (siempre al final, depende de todos)
+  api-gateway:
+    build:
+      context: ./apigateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-server:
+        condition: service_started
+      ms-estado:
+        condition: service_started
+      ms-categoria:
+        condition: service_started
+      ms-usuario:
+        condition: service_started
+      ms-libro:
+        condition: service_started
+      ms-direccion:
+        condition: service_started
+      ms-carrito:
+        condition: service_started
+      ms-venta:
+        condition: service_started
+      ms-pago:
+        condition: service_started
+      ms-envio:
+        condition: service_started
+      ms-resena:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+volumes:
+  mysql-data:
+ 
+networks:
+  microservicios-net:
+    driver: bridge

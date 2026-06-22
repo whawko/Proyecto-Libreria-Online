@@ -8,93 +8,73 @@ spring:
     gateway:
       routes:
         # Microservicio de Libros y Fotos
-        - id: ms-libro
-          uri: lb://ms-libro
-          predicates:
-            - Path=/api/libros/**,/api/fotos/**
-
-        # Microservicio de Categorias
-        - id: ms-categoria
-          uri: lb://ms-categoria
-          predicates:
-            - Path=/api/categorias/**
-
-        # Microservicio de Estados
         - id: ms-estado
           uri: lb://ms-estado
           predicates:
             - Path=/api/estados/**
 
-        # Microservicio de Usuarios
+        - id: ms-categoria
+          uri: lb://ms-categoria
+          predicates:
+            - Path=/api/categorias/**
+
         - id: ms-usuario
           uri: lb://ms-usuario
           predicates:
             - Path=/api/usuarios/**
 
-        # Microservicio de Ventas
-        - id: ms-venta
-          uri: lb://ms-venta
+        # ==========================================
+        # 2. MICROSERVICIOS DE NEGOCIO / INTERMEDIOS
+        # ==========================================
+        - id: ms-libro
+          uri: lb://ms-libro
           predicates:
-            - Path=/api/ventas/**
+            - Path=/api/libros/**,/api/fotos/**
 
-        # Microservicio de Direcciones
         - id: ms-direccion
           uri: lb://ms-direccion
           predicates:
             - Path=/api/direcciones/**
 
-        # Microservicio de Reseñas
-        - id: ms-resena
-          uri: lb://ms-resena
-          predicates:
-            - Path=/api/resenas/**
-
-        # Microservicio de Carrito
         - id: ms-carrito
           uri: lb://ms-carrito
           predicates:
             - Path=/api/carrito/**
 
-        # Microservicio de Pago
+        # ==========================================
+        # 3. MICROSERVICIOS TRANSACCIONALES / CIERRE
+        # ==========================================
+        - id: ms-venta
+          uri: lb://ms-venta
+          predicates:
+            - Path=/api/ventas/**
+
         - id: ms-pago
           uri: lb://ms-pago
           predicates:
             - Path=/api/pagos/**
 
-        # Microservicio de Envio
         - id: ms-envio
           uri: lb://ms-envio
           predicates:
             - Path=/api/envios/**
 
+        - id: ms-resena
+          uri: lb://ms-resena
+          predicates:
+            - Path=/api/resenas/**
+
 eureka:
-  client:
+  client: 
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
+      defaultZone: http://eureka-server:8761/eureka/
   instance:
     prefer-ip-address: true
+    hostname: api-gateway
+    instance-id: api-gateway:${server.port}
 
-springdoc:
-  swagger-ui:
-    urls:
-      - name: ms-libro
-        url: /api/libros/v3/api-docs
-      - name: ms-categoria
-        url: /api/categorias/v3/api-docs
-      - name: ms-estado
-        url: /api/estados/v3/api-docs
-      - name: ms-usuario
-        url: /api/usuarios/v3/api-docs
-      - name: ms-venta
-        url: /api/ventas/v3/api-docs
-      - name: ms-direccion
-        url: /api/direcciones/v3/api-docs
-      - name: ms-resena
-        url: /api/resenas/v3/api-docs
-      - name: ms-carrito
-        url: /api/carrito/v3/api-docs
-      - name: ms-pago
-        url: /api/pagos/v3/api-docs
-      - name: ms-envio
-        url: /api/envios/v3/api-docs
-
+logging:
+  level:
+    '[org.springframework.cloud.gateway]': DEBUG
