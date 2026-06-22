@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: cl.syst3m64.direccion.controller.GlobalControllerTest
 -------------------------------------------------------------------------------
-Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.752 s -- in cl.syst3m64.direccion.controller.GlobalControllerTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.918 s -- in cl.syst3m64.direccion.controller.GlobalControllerTest
