@@ -1,0 +1,42 @@
+2026-07-02T22:19:25.112-04:00  INFO 16676 --- [eurekaserver] [main] cl.syst3m64.eureka.EurekaApplication     : Starting EurekaApplication using Java 21.0.9 with PID 16676 (C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\eureka_server\target\classes started by facky in C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\eureka_server)
+2026-07-02T22:19:25.117-04:00  INFO 16676 --- [eurekaserver] [main] cl.syst3m64.eureka.EurekaApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-07-02T22:19:27.264-04:00  INFO 16676 --- [eurekaserver] [main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=4bf7d4e1-6b13-3cfb-a6ed-46d561a70328
+2026-07-02T22:19:27.774-04:00  INFO 16676 --- [eurekaserver] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8761 (http)
+2026-07-02T22:19:27.820-04:00  INFO 16676 --- [eurekaserver] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-02T22:19:27.822-04:00  INFO 16676 --- [eurekaserver] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-07-02T22:19:27.967-04:00  INFO 16676 --- [eurekaserver] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2739 ms
+2026-07-02T22:19:29.673-04:00  INFO 16676 --- [eurekaserver] [main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-07-02T22:19:29.673-04:00  INFO 16676 --- [eurekaserver] [main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+2026-07-02T22:19:29.899-04:00  INFO 16676 --- [eurekaserver] [main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-07-02T22:19:29.899-04:00  INFO 16676 --- [eurekaserver] [main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-07-02T22:19:30.175-04:00  INFO 16676 --- [eurekaserver] [main] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2026-07-02T22:19:31.525-04:00  WARN 16676 --- [eurekaserver] [main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-07-02T22:19:31.568-04:00  INFO 16676 --- [eurekaserver] [main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-07-02T22:19:31.601-04:00  INFO 16676 --- [eurekaserver] [main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-07-02T22:19:31.601-04:00  INFO 16676 --- [eurekaserver] [main] com.netflix.discovery.DiscoveryClient    : Client configured to neither register nor query for data.
+2026-07-02T22:19:31.607-04:00  INFO 16676 --- [eurekaserver] [main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1783045171602 with initial instances count: 0
+2026-07-02T22:19:31.690-04:00  INFO 16676 --- [eurekaserver] [main] c.n.eureka.DefaultEurekaServerContext    : Initializing ...
+2026-07-02T22:19:31.691-04:00  WARN 16676 --- [eurekaserver] [main] c.n.eureka.cluster.PeerEurekaNodes       : The replica size seems to be empty. Check the route 53 DNS Registry
+2026-07-02T22:19:31.707-04:00  INFO 16676 --- [eurekaserver] [main] c.n.e.registry.AbstractInstanceRegistry  : Finished initializing remote region registries. All known remote regions: []
+2026-07-02T22:19:31.707-04:00  INFO 16676 --- [eurekaserver] [main] c.n.eureka.DefaultEurekaServerContext    : Initialized
+2026-07-02T22:19:31.727-04:00  INFO 16676 --- [eurekaserver] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-02T22:19:31.817-04:00  INFO 16676 --- [eurekaserver] [main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application EUREKASERVER with eureka with status UP
+2026-07-02T22:19:31.832-04:00  INFO 16676 --- [eurekaserver] [Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : isAws returned false
+2026-07-02T22:19:31.834-04:00  INFO 16676 --- [eurekaserver] [Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : Initialized server context
+2026-07-02T22:19:31.834-04:00  INFO 16676 --- [eurekaserver] [Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Got 1 instances from neighboring DS node
+2026-07-02T22:19:31.835-04:00  INFO 16676 --- [eurekaserver] [Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Renew threshold is: 1
+2026-07-02T22:19:31.835-04:00  INFO 16676 --- [eurekaserver] [Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Changing status to UP
+2026-07-02T22:19:31.867-04:00  INFO 16676 --- [eurekaserver] [Thread-9] e.s.EurekaServerInitializerConfiguration : Started Eureka Server
+2026-07-02T22:19:31.914-04:00  INFO 16676 --- [eurekaserver] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8761 (http) with context path '/'
+2026-07-02T22:19:31.917-04:00  INFO 16676 --- [eurekaserver] [main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8761
+2026-07-02T22:19:31.941-04:00  INFO 16676 --- [eurekaserver] [main] cl.syst3m64.eureka.EurekaApplication     : Started EurekaApplication in 7.677 seconds (process running for 9.906)
+2026-07-02T22:19:32.196-04:00  INFO 16676 --- [eurekaserver] [RMI TCP Connection(2)-127.0.0.1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-02T22:19:32.197-04:00  INFO 16676 --- [eurekaserver] [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-02T22:19:32.200-04:00  INFO 16676 --- [eurekaserver] [RMI TCP Connection(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-07-02T22:20:31.858-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-07-02T22:21:31.865-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 7ms
+2026-07-02T22:22:31.875-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 10ms
+2026-07-02T22:23:31.878-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 2ms
+2026-07-02T22:24:31.895-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 16ms
+2026-07-02T22:25:31.896-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 1ms
+2026-07-02T22:26:31.904-04:00  INFO 16676 --- [eurekaserver] [Eureka-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 7ms
