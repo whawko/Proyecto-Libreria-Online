@@ -1,6 +1,6 @@
 services:
  
-  #Servicio 1: levantar MySQL
+  # Servicio 1: levantar MySQL
   mysql:
     image: mysql:8.4
     container_name: mysql-microservicios
@@ -9,7 +9,7 @@ services:
       MYSQL_DATABASE: bd_estados
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./crear_bases_biblioteca_online.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "3307:3306"
     healthcheck:
@@ -21,10 +21,10 @@ services:
     networks:
       - microservicios-net
  
-  #Servicio 2: Eureka
+  # Servicio 2: Eureka
   eureka-server:
     build:
-      context: ./eurekaserver
+      context: "./Biblioteca Online/eureka_server"
       dockerfile: Dockerfile
     container_name: eureka-server
     ports:
@@ -32,17 +32,46 @@ services:
     restart: on-failure
     networks:
       - microservicios-net
+
+  # Servicio 3: ms-estado
+  ms-estado:
+    build:
+      context: "./Biblioteca Online/ms-estado"
+      dockerfile: Dockerfile
+    container_name: ms-estado
+    volumes:
+      - ./logs/ms-estado:/app/logs
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_estados?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
  
-  #Servicio 3: categoria
+  # Servicio 4: ms-categoria
   ms-categoria:
     build:
-      context: ./ms-categoria
+      context: "./Biblioteca Online/ms-categoria"
       dockerfile: Dockerfile
     container_name: ms-categoria
     volumes:
       - ./logs/ms-categoria:/app/logs
     ports:
       - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_categorias?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
@@ -50,137 +79,23 @@ services:
         condition: service_started
     restart: on-failure
     networks:
-      microservicios-net:
-        - microservicios-net
-
+      - microservicios-net
  
-  #Servicio 4: usuario
+  # Servicio 5: ms-usuario
   ms-usuario:
     build:
-      context: ./ms-usuario
+      context: "./Biblioteca Online/ms-usuario"
       dockerfile: Dockerfile
     container_name: ms-usuario
     volumes:
       - ./logs/ms-usuario:/app/logs
     ports:
       - "8084:8084"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      microservicios-net:
-        - microservicios-net
-  #Servicio 5: libro
-  ms-libro:
-    build:
-      context: ./ms-libro
-      dockerfile: Dockerfile
-    container_name: ms-libro
-    volumes:
-      - ./logs/ms-libro:/app/logs
-    ports:
-      - "8081:8081"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      microservicios-net:
-        - microservicios-net
-      
-  #Servicio 6: direccion
-  
-  ms-direccion:
-    build:
-      context: ./ms-direccion
-      dockerfile: Dockerfile
-    container_name: ms-direccion
-    volumes:
-      - ./logs/ms-direccion:/app/logs
-    ports:
-      - "8086:8086"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      microservicios-net:
-        - microservicios-net
- 
-  #Servicio 7: carrito
-  ms-carrito:
-    build:
-      context: ./ms-carrito
-      dockerfile: Dockerfile
-    container_name: ms-carrito
-    volumes:
-      - ./logs/ms-carrito:/app/logs
-    ports:
-      - "8088:8088"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      - microservicios-net
- 
-  #Servicio 8: venta
-  ms-venta:
-    build:
-      context: ./ms-venta
-      dockerfile: Dockerfile
-    container_name: ms-venta
-    volumes:
-      - ./logs/ms-venta:/app/logs
-    ports:
-      - "8085:8085"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      - microservicios-net
- 
-  #Servicio 9: pago
-  ms-pago:
-    build:
-      context: ./ms-pago
-      dockerfile: Dockerfile
-    container_name: ms-pago
-    volumes:
-      - ./logs/ms-pago:/app/logs
-    ports:
-      - "8089:8089"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: on-failure
-    networks:
-      microservicios-net:
-        - microservicios-net
-  #Servicio 10: envio
-  ms-envio:
-    build:
-      context: ./ms-envio
-      dockerfile: Dockerfile
-    container_name: ms-envio
-    volumes:
-      - ./logs/ms-envio:/app/logs
-    ports:
-      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
@@ -190,16 +105,45 @@ services:
     networks:
       - microservicios-net
 
-      #Servicio 10: resena
-  ms-resena:
+  # Servicio 6: ms-libro
+  ms-libro:
     build:
-      context: ./ms-resena
+      context: "./Biblioteca Online/ms-libro"
       dockerfile: Dockerfile
-    container_name: ms-resena
+    container_name: ms-libro
     volumes:
-      - ./logs/ms-resena:/app/logs
+      - ./logs/ms-libro:/app/logs
     ports:
-      - "8087:8087"
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_libros?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+      
+  # Servicio 7: ms-direccion
+  ms-direccion:
+    build:
+      context: "./Biblioteca Online/ms-direccion"
+      dockerfile: Dockerfile
+    container_name: ms-direccion
+    volumes:
+      - ./logs/ms-direccion:/app/logs
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_direccion?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
@@ -209,10 +153,130 @@ services:
     networks:
       - microservicios-net
  
-  #Servicio 11: api-gateway (siempre al final, depende de todos)
+  # Servicio 8: ms-carrito
+  ms-carrito:
+    build:
+      context: "./Biblioteca Online/ms-carrito"
+      dockerfile: Dockerfile
+    container_name: ms-carrito
+    volumes:
+      - ./logs/ms-carrito:/app/logs
+    ports:
+      - "8088:8088"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_carritos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  # Servicio 9: ms-venta
+  ms-venta:
+    build:
+      context: "./Biblioteca Online/ms-venta"
+      dockerfile: Dockerfile
+    container_name: ms-venta
+    volumes:
+      - ./logs/ms-venta:/app/logs
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_ventas?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  # Servicio 10: ms-pago
+  ms-pago:
+    build:
+      context: "./Biblioteca Online/ms-pago"
+      dockerfile: Dockerfile
+    container_name: ms-pago
+    volumes:
+      - ./logs/ms-pago:/app/logs
+    ports:
+      - "8089:8089"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_pagos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+
+  # Servicio 11: ms-envio
+  ms-envio:
+    build:
+      context: "./Biblioteca Online/ms-envio"
+      dockerfile: Dockerfile
+    container_name: ms-envio
+    volumes:
+      - ./logs/ms-envio:/app/logs
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_envios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+
+  # Servicio 12: ms-resena
+  ms-resena:
+    build:
+      context: "./Biblioteca Online/ms-resena"
+      dockerfile: Dockerfile
+    container_name: ms-resena
+    volumes:
+      - ./logs/ms-resena:/app/logs
+    ports:
+      - "8087:8087"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_libreria?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpass
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - microservicios-net
+ 
+  # Servicio 13: api-gateway (siempre al final, depende de todos)
   api-gateway:
     build:
-      context: ./apigateway
+      context: "./Biblioteca Online/api_gateway"
       dockerfile: Dockerfile
     container_name: api-gateway
     ports:
