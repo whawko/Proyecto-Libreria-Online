@@ -78,3 +78,28 @@ eureka:
 logging:
   level:
     '[org.springframework.cloud.gateway]': DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: MS Libro
+        url: /api/libros/v3/api-docs
+      - name: MS Categoria
+        url: /api/categorias/v3/api-docs
+      - name: MS Estado
+        url: /api/estados/v3/api-docs
+      - name: MS Usuario
+        url: /api/usuarios/v3/api-docs
+      - name: MS Venta
+        url: /api/ventas/v3/api-docs
+      - name: MS Dirección
+        url: /api/direcciones/v3/api-docs
+      - name: MS Carrito
+        url: /api/carrito/v3/api-docs
+      - name: MS Pago
+        url: /api/pagos/v3/api-docs
+      - name: MS Envío
+        url: /api/envios/v3/api-docs
+      - name: MS Reseña
+        url: /api/resenas/v3/api-docs
