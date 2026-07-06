@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-resena</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.resena.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package cl.syst3m64.resena.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+<span class="fc" id="L14">public class GlobalExceptionHandler {</span>
+
+    // 404 — Reseña no encontrada
+    @ExceptionHandler(ResenaNotFoundException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleNotFound(ResenaNotFoundException ex) {
+<span class="nc" id="L19">        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());</span>
+    }
+
+    // 400 — Validaciones fallidas (@NotBlank, @Min, etc.)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleValidation(MethodArgumentNotValidException ex) {
+<span class="nc" id="L25">        Map&lt;String, Object&gt; errores = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L26">        ex.getBindingResult().getFieldErrors().forEach(err -&gt;</span>
+<span class="nc" id="L27">            errores.put(err.getField(), err.getDefaultMessage())</span>
+        );
+<span class="nc" id="L29">        errores.put(&quot;timestamp&quot;, LocalDateTime.now());</span>
+<span class="nc" id="L30">        errores.put(&quot;status&quot;, 400);</span>
+<span class="nc" id="L31">        return ResponseEntity.badRequest().body(errores);</span>
+    }
+
+    // 400 — Regla de negocio (ej: usuario ya reseñó el libro)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleBusiness(IllegalArgumentException ex) {
+<span class="nc" id="L37">        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
+    }
+
+    // 503 — Feign no puede conectar a otro MS
+    @ExceptionHandler(feign.FeignException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleFeign(feign.FeignException ex) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        String msg = ex.status() == 404</span>
+<span class="nc" id="L44">            ? &quot;El libro o usuario indicado no existe en el sistema&quot;</span>
+<span class="nc" id="L45">            : &quot;Error al comunicarse con otro microservicio: &quot; + ex.getMessage();</span>
+<span class="nc" id="L46">        return buildResponse(HttpStatus.SERVICE_UNAVAILABLE, msg);</span>
+    }
+
+    private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; buildResponse(HttpStatus status, String message) {
+<span class="nc" id="L50">        Map&lt;String, Object&gt; body = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L51">        body.put(&quot;timestamp&quot;, LocalDateTime.now());</span>
+<span class="nc" id="L52">        body.put(&quot;status&quot;, status.value());</span>
+<span class="nc" id="L53">        body.put(&quot;error&quot;, status.getReasonPhrase());</span>
+<span class="nc" id="L54">        body.put(&quot;message&quot;, message);</span>
+<span class="nc" id="L55">        return ResponseEntity.status(status).body(body);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,5 +1,6 @@
 cl\syst3m64\direccion\dto\DireccionResponseDTO.class
 cl\syst3m64\direccion\repository\RegionRepository.class
+cl\syst3m64\direccion\config\DataInitializer.class
 cl\syst3m64\direccion\dto\ComunaRequestDTO.class
 cl\syst3m64\direccion\service\ComunaService.class
 cl\syst3m64\direccion\exception\RecursoNoEncontradoException.class

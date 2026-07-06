@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+direccion,cl.syst3m64.direccion.exception,ServicioExternoNoDisponibleException,4,0,0,0,2,0,1,0,1,0
+direccion,cl.syst3m64.direccion.exception,RecursoNoEncontradoException,4,0,0,0,2,0,1,0,1,0
+direccion,cl.syst3m64.direccion.exception,GlobalExceptionHandler,61,3,0,0,10,1,6,1,6,1
+direccion,cl.syst3m64.direccion,DireccionApplication,5,3,0,0,2,1,1,1,1,1
+direccion,cl.syst3m64.direccion.controller,GlobalController,18,138,3,3,3,27,3,15,0,15
+direccion,cl.syst3m64.direccion.service.impl,DireccionServiceImpl,115,131,3,3,22,35,9,6,6,6
+direccion,cl.syst3m64.direccion.service.impl,RegionServiceImpl,38,45,1,1,6,9,5,4,4,4
+direccion,cl.syst3m64.direccion.service.impl,ComunaServiceImpl,65,74,2,2,9,15,8,4,6,4
+direccion,cl.syst3m64.direccion.config,DataInitializer,3,113,2,2,1,17,2,2,0,2

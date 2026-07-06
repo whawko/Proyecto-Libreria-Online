@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarritoServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms_carrito</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.carrito.service.impl</a> &gt; <span class="el_source">CarritoServiceImpl.java</span></div><h1>CarritoServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.carrito.service.impl;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import cl.syst3m64.carrito.dto.CarritoRequestDTO;
+import cl.syst3m64.carrito.dto.CarritoResponseDTO;
+import cl.syst3m64.carrito.dto.LibroResponseDTO;
+import cl.syst3m64.carrito.client.LibroFeignClient;
+import cl.syst3m64.carrito.client.UsuarioFeignClient;
+import cl.syst3m64.carrito.exception.RecursoNoEncontradoException;
+import cl.syst3m64.carrito.exception.ServicioExternoNoDisponibleException;
+import cl.syst3m64.carrito.model.Carrito;
+import cl.syst3m64.carrito.repository.CarritoRepository;
+import cl.syst3m64.carrito.service.CarritoService;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class CarritoServiceImpl implements CarritoService {
+
+    private final CarritoRepository carritoRepository;
+    private final UsuarioFeignClient usuarioFeignClient;
+    private final LibroFeignClient libroFeignClient;
+
+    @Override
+    @Transactional
+    public CarritoResponseDTO agregarAlCarrito(CarritoRequestDTO request) {
+        // 1. Validar que el usuario exista
+        try {
+<span class="fc" id="L35">            usuarioFeignClient.obtenerUsuarioPorId(request.getIdUsuario());</span>
+<span class="nc" id="L36">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L37">            throw new RecursoNoEncontradoException(&quot;El usuario con ID &quot; + request.getIdUsuario() + &quot; no existe.&quot;);</span>
+<span class="nc" id="L38">        } catch (FeignException e) {</span>
+<span class="nc" id="L39">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms-usuario: &quot; + e.getMessage());</span>
+<span class="nc" id="L40">        } catch (Exception e) {</span>
+<span class="nc" id="L41">            throw new RuntimeException(&quot;Error al validar el usuario con ID &quot; + request.getIdUsuario() + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L42">        }</span>
+
+        // 2. Validar que el libro exista y obtener su precio
+        LibroResponseDTO libro;
+        try {
+<span class="fc" id="L47">            libro = libroFeignClient.obtenerLibroPorId(request.getIdLibro());</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if (libro == null) {</span>
+<span class="nc" id="L49">                throw new RecursoNoEncontradoException(&quot;El libro con ID &quot; + request.getIdLibro() + &quot; no fue encontrado.&quot;);</span>
+            }
+<span class="nc" id="L51">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L52">            throw new RecursoNoEncontradoException(&quot;El libro con ID &quot; + request.getIdLibro() + &quot; no existe.&quot;);</span>
+<span class="nc" id="L53">        } catch (FeignException e) {</span>
+<span class="nc" id="L54">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms-libro: &quot; + e.getMessage());</span>
+<span class="nc" id="L55">        } catch (Exception e) {</span>
+<span class="nc" id="L56">            throw new RuntimeException(&quot;Error al validar el libro con ID &quot; + request.getIdLibro() + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L57">        }</span>
+
+<span class="fc" id="L59">        BigDecimal precioUnitario = BigDecimal.valueOf(libro.getPrecio());</span>
+
+        // 3. Verificar si el libro ya está en el carrito del usuario
+<span class="fc" id="L62">        Optional&lt;Carrito&gt; carritoExistente = carritoRepository.findByIdUsuarioAndIdLibro(request.getIdUsuario(), request.getIdLibro());</span>
+
+        Carrito carrito;
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (carritoExistente.isPresent()) {</span>
+<span class="nc" id="L66">            carrito = carritoExistente.get();</span>
+<span class="nc" id="L67">            carrito.setCantidad(carrito.getCantidad() + request.getCantidad());</span>
+<span class="nc" id="L68">            carrito.setSubtotal(precioUnitario.multiply(BigDecimal.valueOf(carrito.getCantidad())));</span>
+        } else {
+<span class="fc" id="L70">            carrito = new Carrito();</span>
+<span class="fc" id="L71">            carrito.setIdUsuario(request.getIdUsuario());</span>
+<span class="fc" id="L72">            carrito.setIdLibro(request.getIdLibro());</span>
+<span class="fc" id="L73">            carrito.setCantidad(request.getCantidad());</span>
+<span class="fc" id="L74">            carrito.setPrecioUnitario(precioUnitario);</span>
+<span class="fc" id="L75">            carrito.setSubtotal(precioUnitario.multiply(BigDecimal.valueOf(request.getCantidad())));</span>
+        }
+
+<span class="fc" id="L78">        Carrito saved = carritoRepository.save(carrito);</span>
+<span class="fc" id="L79">        return mapToResponse(saved);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;CarritoResponseDTO&gt; obtenerCarritoPorUsuario(Long idUsuario) {
+<span class="fc" id="L85">        return carritoRepository.findByIdUsuario(idUsuario).stream()</span>
+<span class="fc" id="L86">            .map(this::mapToResponse)</span>
+<span class="fc" id="L87">            .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    @Transactional
+    public CarritoResponseDTO actualizarCantidad(Long id, Integer cantidad) {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (cantidad &lt; 1) {</span>
+<span class="fc" id="L94">            throw new IllegalArgumentException(&quot;La cantidad mínima debe ser 1.&quot;);</span>
+        }
+
+<span class="fc" id="L97">        Carrito carrito = carritoRepository.findById(id)</span>
+<span class="pc" id="L98">            .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Item del carrito no encontrado con ID: &quot; + id));</span>
+
+<span class="fc" id="L100">        carrito.setCantidad(cantidad);</span>
+<span class="fc" id="L101">        carrito.setSubtotal(carrito.getPrecioUnitario().multiply(BigDecimal.valueOf(cantidad)));</span>
+
+<span class="fc" id="L103">        Carrito saved = carritoRepository.save(carrito);</span>
+<span class="fc" id="L104">        return mapToResponse(saved);</span>
+    }
+
+    @Override
+    @Transactional
+    public void eliminarDelCarrito(Long id) {
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (!carritoRepository.existsById(id)) {</span>
+<span class="nc" id="L111">            throw new RecursoNoEncontradoException(&quot;Item del carrito no encontrado con ID: &quot; + id);</span>
+        }
+<span class="nc" id="L113">        carritoRepository.deleteById(id);</span>
+<span class="nc" id="L114">    }</span>
+
+    @Override
+    @Transactional
+    public void vaciarCarrito(Long idUsuario) {
+<span class="nc" id="L119">        List&lt;Carrito&gt; items = carritoRepository.findByIdUsuario(idUsuario);</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (items.isEmpty()) {</span>
+<span class="nc" id="L121">            throw new RecursoNoEncontradoException(&quot;El carrito del usuario con ID &quot; + idUsuario + &quot; ya está vacío o no existe.&quot;);</span>
+        }
+<span class="nc" id="L123">        carritoRepository.deleteAll(items);</span>
+<span class="nc" id="L124">    }</span>
+
+    private CarritoResponseDTO mapToResponse(Carrito carrito) {
+<span class="fc" id="L127">        return new CarritoResponseDTO(</span>
+<span class="fc" id="L128">            carrito.getId(),</span>
+<span class="fc" id="L129">            carrito.getIdUsuario(),</span>
+<span class="fc" id="L130">            carrito.getIdLibro(),</span>
+<span class="fc" id="L131">            carrito.getCantidad(),</span>
+<span class="fc" id="L132">            carrito.getPrecioUnitario(),</span>
+<span class="fc" id="L133">            carrito.getSubtotal()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

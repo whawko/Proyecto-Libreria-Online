@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">direccion</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.direccion.controller</a> &gt; <span class="el_source">GlobalController.java</span></div><h1>GlobalController.java</h1><pre class="source lang-java linenums">package cl.syst3m64.direccion.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cl.syst3m64.direccion.dto.ComunaRequestDTO;
+import cl.syst3m64.direccion.dto.ComunaResponseDTO;
+import cl.syst3m64.direccion.dto.DireccionRequestDTO;
+import cl.syst3m64.direccion.dto.DireccionResponseDTO;
+import cl.syst3m64.direccion.dto.RegionRequestDTO;
+import cl.syst3m64.direccion.dto.RegionResponseDTO;
+import cl.syst3m64.direccion.service.RegionService;
+import cl.syst3m64.direccion.service.ComunaService;
+import cl.syst3m64.direccion.service.DireccionService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+
+@RestController
+@RequestMapping(&quot;/api/direcciones&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Direcciones&quot;, description = &quot;Controlador para gestionar regiones, comunas y direcciones de los usuarios&quot;)
+public class GlobalController {
+
+    private final RegionService regionService;
+    private final ComunaService comunaService;
+    private final DireccionService direccionService;
+
+    @GetMapping(&quot;/regiones&quot;)
+    @Operation(summary = &quot;Obtener todas las regiones&quot;, description = &quot;Recupera una lista con todas las regiones registradas.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Lista de regiones obtenida exitosamente&quot;)
+    public ResponseEntity&lt;List&lt;RegionResponseDTO&gt;&gt; obtenerRegiones(){
+<span class="fc" id="L46">        return ResponseEntity.ok(regionService.obtenerRegiones());</span>
+    }
+
+    @GetMapping(&quot;/regiones/{id}&quot;)
+    @Operation(summary = &quot;Obtener región por ID&quot;, description = &quot;Recupera los detalles de una región específica por su identificador.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Región encontrada&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Región no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;RegionResponseDTO&gt; obtenerRegionPorId(@PathVariable Long id){
+<span class="fc" id="L54">        return regionService.obtenerRegionPorId(id)</span>
+<span class="fc" id="L55">        .map(ResponseEntity::ok)</span>
+<span class="fc" id="L56">        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));</span>
+    }
+
+    @PostMapping(&quot;/regiones&quot;)
+    @Operation(summary = &quot;Crear región&quot;, description = &quot;Registra una nueva región en el sistema.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Región creada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    public ResponseEntity&lt;RegionResponseDTO&gt; crearRegion(@Valid @RequestBody RegionRequestDTO region){
+<span class="fc" id="L64">        return ResponseEntity.status(HttpStatus.CREATED).body(regionService.crearRegion(region));</span>
+    }
+
+    @PutMapping(&quot;/regiones/{id}&quot;)
+    @Operation(summary = &quot;Actualizar región&quot;, description = &quot;Modifica los datos de una región existente.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Región actualizada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Región no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;RegionResponseDTO&gt; actualizarRegion(@PathVariable Long id, @Valid @RequestBody RegionRequestDTO region){
+<span class="fc" id="L73">        return ResponseEntity.ok(regionService.actualizarRegion(id, region));</span>
+    }
+
+    @DeleteMapping(&quot;/regiones/{id}&quot;)
+    @Operation(summary = &quot;Eliminar región&quot;, description = &quot;Elimina de forma permanente una región por su ID.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Región eliminada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Región no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;?&gt; eliminarRegion(@PathVariable Long id){
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if(regionService.obtenerRegionPorId(id).isEmpty()){</span>
+<span class="nc" id="L82">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Region no encontrada con ID: &quot; + id);</span>
+        }
+<span class="fc" id="L84">        regionService.eliminarRegion(id);</span>
+<span class="fc" id="L85">        return ResponseEntity.ok(&quot;Region eliminada exitosamente&quot;);</span>
+    }
+
+    @GetMapping(&quot;/comunas&quot;)
+    @Operation(summary = &quot;Obtener todas las comunas&quot;, description = &quot;Recupera una lista con todas las comunas registradas.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Lista de comunas obtenida exitosamente&quot;)
+    public ResponseEntity&lt;List&lt;ComunaResponseDTO&gt;&gt; obtenerComunas(){
+<span class="fc" id="L92">        return ResponseEntity.ok(comunaService.obtenerComunas());</span>
+    }
+
+    @GetMapping(&quot;/comunas/{id}&quot;)
+    @Operation(summary = &quot;Obtener comuna por ID&quot;, description = &quot;Recupera los detalles de una comuna por su identificador.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Comuna encontrada&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Comuna no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;ComunaResponseDTO&gt; obtenerComunaPorId(@PathVariable Long id){
+<span class="fc" id="L100">        return comunaService.obtenerComunaPorId(id)</span>
+<span class="fc" id="L101">        .map(ResponseEntity::ok)</span>
+<span class="fc" id="L102">        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));</span>
+    }
+
+    @PostMapping(&quot;/comunas&quot;)
+    @Operation(summary = &quot;Crear comuna&quot;, description = &quot;Registra una nueva comuna vinculada a una región.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Comuna creada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    public ResponseEntity&lt;ComunaResponseDTO&gt; crearComuna(@Valid @RequestBody ComunaRequestDTO comuna){
+<span class="fc" id="L110">        return ResponseEntity.status(HttpStatus.CREATED).body(comunaService.crearComuna(comuna));</span>
+    }
+
+    @PutMapping(&quot;/comunas/{id}&quot;)
+    @Operation(summary = &quot;Actualizar comuna&quot;, description = &quot;Modifica los datos de una comuna existente.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Comuna actualizada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Comuna no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;ComunaResponseDTO&gt; actualizarComuna(@PathVariable Long id, @Valid @RequestBody ComunaRequestDTO comuna){
+<span class="fc" id="L119">        return ResponseEntity.ok(comunaService.actualizarComuna(id, comuna));</span>
+    }
+
+    @DeleteMapping(&quot;/comunas/{id}&quot;)
+    @Operation(summary = &quot;Eliminar comuna&quot;, description = &quot;Elimina una comuna por su ID.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Comuna eliminada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Comuna no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;?&gt; eliminarComuna(@PathVariable Long id){
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if(comunaService.obtenerComunaPorId(id).isEmpty()){</span>
+<span class="nc" id="L128">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Comuna no encontrada con ID: &quot; + id);</span>
+        }
+<span class="fc" id="L130">        comunaService.eliminarComuna(id);</span>
+<span class="fc" id="L131">        return ResponseEntity.ok(&quot;Comuna eliminada exitosamente&quot;);</span>
+    }
+
+    @GetMapping
+    @Operation(summary = &quot;Obtener todas las direcciones&quot;, description = &quot;Recupera la lista de todas las direcciones de domicilio registradas.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Lista de direcciones obtenida exitosamente&quot;)
+    public ResponseEntity&lt;List&lt;DireccionResponseDTO&gt;&gt; obtenerDirecciones(){
+<span class="fc" id="L138">        return ResponseEntity.ok(direccionService.obtenerDirecciones());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Obtener dirección por ID&quot;, description = &quot;Recupera los detalles de una dirección de domicilio específica.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Dirección encontrada&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Dirección no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;DireccionResponseDTO&gt; obtenerDireccionPorId(@PathVariable Long id){
+<span class="fc" id="L146">        return direccionService.obtenerDireccionPorId(id)</span>
+<span class="fc" id="L147">        .map(ResponseEntity::ok)</span>
+<span class="fc" id="L148">        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Crear dirección&quot;, description = &quot;Registra una nueva dirección para un usuario.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Dirección creada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    public ResponseEntity&lt;DireccionResponseDTO&gt; crearDireccion(@Valid @RequestBody DireccionRequestDTO direccion){
+<span class="fc" id="L156">        return ResponseEntity.status(HttpStatus.CREATED).body(direccionService.crearDireccion(direccion));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Actualizar dirección&quot;, description = &quot;Modifica los datos de una dirección existente.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Dirección actualizada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Dirección no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;DireccionResponseDTO&gt; actualizarDireccion(@PathVariable Long id, @Valid @RequestBody DireccionRequestDTO direccion){
+<span class="fc" id="L165">        return ResponseEntity.ok(direccionService.actualizarDireccion(id, direccion));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Eliminar dirección&quot;, description = &quot;Elimina una dirección de domicilio por su ID.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Dirección eliminada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Dirección no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;?&gt; eliminarDireccion(@PathVariable Long id){
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if(direccionService.obtenerDireccionPorId(id).isEmpty()){</span>
+<span class="nc" id="L174">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Direccion no encontrada con ID: &quot; + id);</span>
+        }
+<span class="fc" id="L176">        direccionService.eliminarDireccion(id);</span>
+<span class="fc" id="L177">        return ResponseEntity.ok(&quot;Direccion eliminada exitosamente&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

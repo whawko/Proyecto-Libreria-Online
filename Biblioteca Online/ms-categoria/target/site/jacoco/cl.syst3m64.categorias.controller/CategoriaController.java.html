@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoriaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms_categoria</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.categorias.controller</a> &gt; <span class="el_source">CategoriaController.java</span></div><h1>CategoriaController.java</h1><pre class="source lang-java linenums">package cl.syst3m64.categorias.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import cl.syst3m64.categorias.dto.CategoriaRequestDTO;
+import cl.syst3m64.categorias.dto.CategoriaResponseDTO;
+import cl.syst3m64.categorias.service.CategoriaService;
+import cl.syst3m64.categorias.exception.RecursoNoEncontradoException;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@RestController
+@RequestMapping(&quot;/api/categorias&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Categorías&quot;, description = &quot;Controlador para gestionar las categorías de libros&quot;)
+public class CategoriaController {
+    private final CategoriaService categoriaService;
+
+    @GetMapping
+    @Operation(summary = &quot;Obtener todas las categorías&quot;, description = &quot;Recupera una lista con todas las categorías de libros disponibles.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Lista de categorías obtenida exitosamente&quot;)
+    public List&lt;CategoriaResponseDTO&gt; obtenerTodas(){
+<span class="fc" id="L40">        return categoriaService.obtenerTodas();</span>
+    }
+
+    @GetMapping(&quot;/nombres&quot;)
+    @Operation(summary = &quot;Buscar categorías por nombre&quot;, description = &quot;Busca categorías de libros cuyo nombre coincida con el término provisto.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Categorías encontradas exitosamente&quot;)
+    public List&lt;CategoriaResponseDTO&gt; obtenerNombresCat(@RequestParam String nombre){
+<span class="fc" id="L47">        return categoriaService.obtenerNombres(nombre);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Obtener categoría por ID&quot;, description = &quot;Recupera los detalles de una categoría específica utilizando su identificador.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Categoría encontrada&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Categoría no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;CategoriaResponseDTO&gt; obtenerId(@PathVariable Long id){
+<span class="fc" id="L55">        CategoriaResponseDTO response = categoriaService.obtenerPorId(id)</span>
+<span class="fc" id="L56">            .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Categoria no encontrada con ID: &quot; + id));</span>
+<span class="fc" id="L57">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PostMapping
+    @Operation(summary = &quot;Crear una nueva categoría&quot;, description = &quot;Registra una nueva categoría de libros en el sistema.&quot;)
+    @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Categoría creada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    public ResponseEntity&lt;CategoriaResponseDTO&gt; crear(@Valid @RequestBody CategoriaRequestDTO cat){
+<span class="fc" id="L65">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="fc" id="L66">        .body(categoriaService.guardar(cat));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Actualizar una categoría&quot;, description = &quot;Modifica los datos de una categoría existente utilizando su identificador.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Categoría actualizada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Datos de entrada inválidos&quot;, content = @Content)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Categoría no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;CategoriaResponseDTO&gt; actualizar(@PathVariable Long id, @Valid @RequestBody CategoriaRequestDTO cat){
+<span class="fc" id="L75">        CategoriaResponseDTO response = categoriaService.actualizar(id, cat)</span>
+<span class="fc" id="L76">            .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Categoria no encontrada con ID: &quot; + id));</span>
+<span class="fc" id="L77">        return ResponseEntity.ok(response);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Eliminar una categoría&quot;, description = &quot;Elimina de forma permanente una categoría específica del sistema.&quot;)
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Categoría eliminada exitosamente&quot;)
+    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Categoría no encontrada&quot;, content = @Content)
+    public ResponseEntity&lt;?&gt; eliminar(@PathVariable Long id){
+<span class="fc" id="L85">        categoriaService.obtenerPorId(id)</span>
+<span class="fc" id="L86">            .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Categoria no encontrada con ID: &quot; + id));</span>
+<span class="fc" id="L87">        categoriaService.eliminar(id);</span>
+<span class="fc" id="L88">        return ResponseEntity.ok(&quot;Categoria eliminada exitosamente&quot;);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

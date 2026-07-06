@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RegionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">direccion</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.direccion.service.impl</a> &gt; <span class="el_source">RegionServiceImpl.java</span></div><h1>RegionServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.direccion.service.impl;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import cl.syst3m64.direccion.dto.RegionRequestDTO;
+import cl.syst3m64.direccion.dto.RegionResponseDTO;
+import cl.syst3m64.direccion.exception.RecursoNoEncontradoException;
+import cl.syst3m64.direccion.model.Region;
+import cl.syst3m64.direccion.repository.RegionRepository;
+import cl.syst3m64.direccion.service.RegionService;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class RegionServiceImpl implements RegionService {
+
+    private final RegionRepository regionRepository;
+
+    @Override
+    public List&lt;RegionResponseDTO&gt; obtenerRegiones() {
+<span class="fc" id="L25">        return regionRepository.findAll().stream()</span>
+<span class="fc" id="L26">                .map(this::mapToResponseDTO)</span>
+<span class="fc" id="L27">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Optional&lt;RegionResponseDTO&gt; obtenerRegionPorId(Long id) {
+<span class="fc" id="L32">        return regionRepository.findById(id).map(this::mapToResponseDTO);</span>
+    }
+
+    @Override
+    public RegionResponseDTO crearRegion(RegionRequestDTO regionDto) {
+<span class="fc" id="L37">        Region region = new Region();</span>
+<span class="fc" id="L38">        region.setNombre(regionDto.getNombre());</span>
+<span class="fc" id="L39">        return mapToResponseDTO(regionRepository.save(region));</span>
+    }
+
+    @Override
+    public RegionResponseDTO actualizarRegion(Long id, RegionRequestDTO regionDto) {
+<span class="nc" id="L44">        return regionRepository.findById(id).map(existing -&gt; {</span>
+<span class="nc" id="L45">            existing.setNombre(regionDto.getNombre());</span>
+<span class="nc" id="L46">            return mapToResponseDTO(regionRepository.save(existing));</span>
+<span class="nc" id="L47">        }).orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Region no encontrada con ID: &quot; + id));</span>
+    }
+
+    @Override
+    public void eliminarRegion(Long id) {
+<span class="nc" id="L52">        regionRepository.deleteById(id);</span>
+<span class="nc" id="L53">    }</span>
+
+    private RegionResponseDTO mapToResponseDTO(Region region) {
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (region == null) return null;</span>
+<span class="fc" id="L57">        return new RegionResponseDTO(region.getId(), region.getNombre());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+pago,cl.syst3m64.pago.service.impl,PagoServiceImpl,56,108,2,4,11,27,3,4,1,3
+pago,cl.syst3m64.pago,PagoApplication,8,0,0,0,3,0,2,0,2,0
+pago,cl.syst3m64.pago.config,DataInitializer,43,0,2,0,10,0,3,0,2,0
+pago,cl.syst3m64.pago.exception,ServicioExternoNoDisponibleException,4,0,0,0,2,0,1,0,1,0
+pago,cl.syst3m64.pago.exception,GlobalExceptionHandler,64,0,0,0,11,0,7,0,7,0
+pago,cl.syst3m64.pago.exception,RecursoNoEncontradoException,4,0,0,0,2,0,1,0,1,0
+pago,cl.syst3m64.pago.controller,PagoController,30,0,0,0,7,0,3,0,3,0

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI Centralizado</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui.css" />
+  <style>
+    html { box-sizing: border-box; overflow-y: scroll; }
+    *, *:before, *:after { box-sizing: inherit; }
+    body { margin: 0; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        urls: [
+          { name: "MS Libro", url: "/api/libros/v3/api-docs" },
+          { name: "MS Categoria", url: "/api/categorias/v3/api-docs" },
+          { name: "MS Estado", url: "/api/estados/v3/api-docs" },
+          { name: "MS Usuario", url: "/api/usuarios/v3/api-docs" },
+          { name: "MS Venta", url: "/api/ventas/v3/api-docs" },
+          { name: "MS Dirección", url: "/api/direcciones/v3/api-docs" },
+          { name: "MS Carrito", url: "/api/carrito/v3/api-docs" },
+          { name: "MS Pago", url: "/api/pagos/v3/api-docs" },
+          { name: "MS Envío", url: "/api/envios/v3/api-docs" },
+          { name: "MS Reseña", url: "/api/resenas/v3/api-docs" }
+        ],
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

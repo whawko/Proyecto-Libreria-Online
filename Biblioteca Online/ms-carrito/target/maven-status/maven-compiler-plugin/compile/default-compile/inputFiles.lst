@@ -1,6 +1,7 @@
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\CarritoApplication.java
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\client\LibroFeignClient.java
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\client\UsuarioFeignClient.java
+C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\config\DataInitializer.java
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\controller\CarritoController.java
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\dto\CarritoRequestDTO.java
 C:\Users\facky\OneDrive\Documents\GitHub\Proyecto-Libreria-Online\Biblioteca Online\ms-carrito\src\main\java\cl\syst3m64\carrito\dto\CarritoResponseDTO.java

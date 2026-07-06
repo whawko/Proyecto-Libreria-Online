@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ms-resena,cl.syst3m64.resena.model,Resena,0,10,1,1,0,3,1,1,0,1
+ms-resena,cl.syst3m64.resena.exception,GlobalExceptionHandler,92,3,2,0,18,1,7,1,6,1
+ms-resena,cl.syst3m64.resena.exception,ResenaNotFoundException,0,5,0,0,0,2,0,1,0,1
+ms-resena,cl.syst3m64.resena.config,DataInitializer,60,0,2,0,17,0,3,0,2,0
+ms-resena,cl.syst3m64.resena.service.impl,ResenaServiceImpl,103,162,0,2,19,36,7,8,7,7
+ms-resena,cl.syst3m64.resena.controller,ResenaController,0,45,0,0,0,8,0,7,0,7
+ms-resena,cl.syst3m64.resena,MsResenaApplication,5,3,0,0,2,1,1,1,1,1

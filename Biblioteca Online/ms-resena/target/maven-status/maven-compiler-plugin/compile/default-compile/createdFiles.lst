@@ -10,5 +10,6 @@ cl\syst3m64\resena\dto\UsuarioDTO.class
 cl\syst3m64\resena\dto\ResenaRequestDTO.class
 cl\syst3m64\resena\model\Resena.class
 cl\syst3m64\resena\dto\ResenaResponseDTO.class
+cl\syst3m64\resena\config\DataInitializer.class
 cl\syst3m64\resena\client\LibroFeignClient.class
 cl\syst3m64\resena\service\impl\ResenaServiceImpl.class

@@ -1,5 +1,6 @@
 cl\syst3m64\pago\service\impl\PagoServiceImpl.class
 cl\syst3m64\pago\service\PagoService.class
+cl\syst3m64\pago\config\DataInitializer.class
 cl\syst3m64\pago\repository\PagoRepository.class
 cl\syst3m64\pago\exception\GlobalExceptionHandler.class
 cl\syst3m64\pago\dto\PagoRequestDTO.class

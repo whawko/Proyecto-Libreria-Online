@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResenaServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-resena</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.resena.service.impl</a> &gt; <span class="el_source">ResenaServiceImpl.java</span></div><h1>ResenaServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.resena.service.impl;
+
+import cl.syst3m64.resena.dto.*;
+import cl.syst3m64.resena.exception.ResenaNotFoundException;
+import cl.syst3m64.resena.client.LibroFeignClient;
+import cl.syst3m64.resena.client.UsuarioFeignClient;
+import cl.syst3m64.resena.model.Resena;
+import cl.syst3m64.resena.repository.ResenaRepository;
+import cl.syst3m64.resena.service.ResenaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ResenaServiceImpl implements ResenaService {
+
+    private final ResenaRepository resenaRepository;
+    private final LibroFeignClient libroFeignClient;
+    private final UsuarioFeignClient usuarioFeignClient;
+
+    @Override
+    public ResenaResponseDTO crear(ResenaRequestDTO dto) {
+        // 1. Verificar que el libro existe (Feign lanza excepción si no)
+<span class="fc" id="L27">        LibroDTO libro = libroFeignClient.obtenerLibroPorId(dto.getIdLibro());</span>
+
+        // 2. Verificar que el usuario existe
+<span class="fc" id="L30">        UsuarioDTO usuario = usuarioFeignClient.obtenerUsuarioPorId(dto.getIdUsuario());</span>
+
+        // 3. Un usuario solo puede reseñar un libro una vez
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (resenaRepository.existsByIdLibroAndIdUsuario(dto.getIdLibro(), dto.getIdUsuario())) {</span>
+<span class="fc" id="L34">            throw new IllegalArgumentException(</span>
+                &quot;El usuario ya tiene una reseña para este libro&quot;
+            );
+        }
+
+        // 4. Guardar
+<span class="fc" id="L40">        Resena resena = new Resena();</span>
+<span class="fc" id="L41">        resena.setIdLibro(dto.getIdLibro());</span>
+<span class="fc" id="L42">        resena.setIdUsuario(dto.getIdUsuario());</span>
+<span class="fc" id="L43">        resena.setTitulo(dto.getTitulo());</span>
+<span class="fc" id="L44">        resena.setComentario(dto.getComentario());</span>
+<span class="fc" id="L45">        resena.setCalificacion(dto.getCalificacion());</span>
+<span class="fc" id="L46">        Resena guardada = resenaRepository.save(resena);</span>
+
+<span class="fc" id="L48">        return toResponse(guardada, libro, usuario);</span>
+    }
+
+    @Override
+    public List&lt;ResenaResponseDTO&gt; listarTodas() {
+<span class="fc" id="L53">        return resenaRepository.findAll().stream()</span>
+<span class="fc" id="L54">            .map(this::enriquecer)</span>
+<span class="fc" id="L55">            .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public ResenaResponseDTO buscarPorId(Long id) {
+<span class="fc" id="L60">        Resena resena = resenaRepository.findById(id)</span>
+<span class="fc" id="L61">            .orElseThrow(() -&gt; new ResenaNotFoundException(id));</span>
+<span class="fc" id="L62">        return enriquecer(resena);</span>
+    }
+
+    @Override
+    public List&lt;ResenaResponseDTO&gt; listarPorLibro(Long idLibro) {
+<span class="nc" id="L67">        LibroDTO libro = libroFeignClient.obtenerLibroPorId(idLibro);</span>
+<span class="nc" id="L68">        return resenaRepository.findByIdLibroAndEstado(idLibro, &quot;ACTIVO&quot;).stream()</span>
+<span class="nc" id="L69">            .map(r -&gt; {</span>
+<span class="nc" id="L70">                UsuarioDTO usuario = usuarioFeignClient.obtenerUsuarioPorId(r.getIdUsuario());</span>
+<span class="nc" id="L71">                return toResponse(r, libro, usuario);</span>
+            })
+<span class="nc" id="L73">            .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;ResenaResponseDTO&gt; listarPorUsuario(Long idUsuario) {
+<span class="nc" id="L78">        UsuarioDTO usuario = usuarioFeignClient.obtenerUsuarioPorId(idUsuario);</span>
+<span class="nc" id="L79">        return resenaRepository.findByIdUsuarioAndEstado(idUsuario, &quot;ACTIVO&quot;).stream()</span>
+<span class="nc" id="L80">            .map(r -&gt; {</span>
+<span class="nc" id="L81">                LibroDTO libro = libroFeignClient.obtenerLibroPorId(r.getIdLibro());</span>
+<span class="nc" id="L82">                return toResponse(r, libro, usuario);</span>
+            })
+<span class="nc" id="L84">            .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public ResenaResponseDTO actualizar(Long id, ResenaRequestDTO dto) {
+<span class="nc" id="L89">        Resena resena = resenaRepository.findById(id)</span>
+<span class="nc" id="L90">            .orElseThrow(() -&gt; new ResenaNotFoundException(id));</span>
+
+<span class="nc" id="L92">        resena.setTitulo(dto.getTitulo());</span>
+<span class="nc" id="L93">        resena.setComentario(dto.getComentario());</span>
+<span class="nc" id="L94">        resena.setCalificacion(dto.getCalificacion());</span>
+
+<span class="nc" id="L96">        Resena actualizada = resenaRepository.save(resena);</span>
+<span class="nc" id="L97">        return enriquecer(actualizada);</span>
+    }
+
+    @Override
+    public void eliminar(Long id) {
+<span class="fc" id="L102">        Resena resena = resenaRepository.findById(id)</span>
+<span class="pc" id="L103">            .orElseThrow(() -&gt; new ResenaNotFoundException(id));</span>
+<span class="fc" id="L104">        resena.setEstado(&quot;ELIMINADO&quot;);</span>
+<span class="fc" id="L105">        resenaRepository.save(resena);</span>
+<span class="fc" id="L106">    }</span>
+
+    private ResenaResponseDTO enriquecer(Resena resena) {
+<span class="fc" id="L109">        LibroDTO libro = libroFeignClient.obtenerLibroPorId(resena.getIdLibro());</span>
+<span class="fc" id="L110">        UsuarioDTO usuario = usuarioFeignClient.obtenerUsuarioPorId(resena.getIdUsuario());</span>
+<span class="fc" id="L111">        return toResponse(resena, libro, usuario);</span>
+    }
+
+    private ResenaResponseDTO toResponse(Resena resena, LibroDTO libro, UsuarioDTO usuario) {
+<span class="fc" id="L115">        ResenaResponseDTO response = new ResenaResponseDTO();</span>
+<span class="fc" id="L116">        response.setIdResena(resena.getIdResena());</span>
+<span class="fc" id="L117">        response.setTitulo(resena.getTitulo());</span>
+<span class="fc" id="L118">        response.setComentario(resena.getComentario());</span>
+<span class="fc" id="L119">        response.setCalificacion(resena.getCalificacion());</span>
+<span class="fc" id="L120">        response.setFechaResena(resena.getFechaResena());</span>
+<span class="fc" id="L121">        response.setEstado(resena.getEstado());</span>
+<span class="fc" id="L122">        response.setLibro(libro);</span>
+<span class="fc" id="L123">        response.setUsuario(usuario);</span>
+<span class="fc" id="L124">        return response;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

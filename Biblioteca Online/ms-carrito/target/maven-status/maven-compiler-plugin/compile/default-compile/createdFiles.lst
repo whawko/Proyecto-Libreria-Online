@@ -8,6 +8,7 @@ cl\syst3m64\carrito\client\LibroFeignClient.class
 cl\syst3m64\carrito\exception\ServicioExternoNoDisponibleException.class
 cl\syst3m64\carrito\dto\LibroResponseDTO.class
 cl\syst3m64\carrito\service\impl\CarritoServiceImpl.class
+cl\syst3m64\carrito\config\DataInitializer.class
 cl\syst3m64\carrito\model\Carrito.class
 cl\syst3m64\carrito\service\CarritoService.class
 cl\syst3m64\carrito\dto\UsuarioDTO.class

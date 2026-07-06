@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EnvioServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">envio</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.envio.service.impl</a> &gt; <span class="el_source">EnvioServiceImpl.java</span></div><h1>EnvioServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.envio.service.impl;
+
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import cl.syst3m64.envio.dto.DireccionResponseDTO;
+import cl.syst3m64.envio.dto.EnvioRequestDTO;
+import cl.syst3m64.envio.dto.EnvioResponseDTO;
+import cl.syst3m64.envio.dto.VentaResponseDTO;
+import cl.syst3m64.envio.client.DireccionFeignClient;
+import cl.syst3m64.envio.client.VentaFeignClient;
+import cl.syst3m64.envio.exception.RecursoNoEncontradoException;
+import cl.syst3m64.envio.exception.ServicioExternoNoDisponibleException;
+import cl.syst3m64.envio.model.Envio;
+import cl.syst3m64.envio.repository.EnvioRepository;
+import cl.syst3m64.envio.service.EnvioService;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class EnvioServiceImpl implements EnvioService {
+
+    private final EnvioRepository envioRepository;
+    private final VentaFeignClient ventaFeignClient;
+    private final DireccionFeignClient direccionFeignClient;
+
+    @Override
+    @Transactional
+    public EnvioResponseDTO registrarEnvio(EnvioRequestDTO request) {
+        // 1. Validar que la venta exista en ms_venta
+        VentaResponseDTO venta;
+        try {
+<span class="fc" id="L34">            venta = ventaFeignClient.obtenerVentaPorId(request.getIdVenta());</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (venta == null) {</span>
+<span class="nc" id="L36">                throw new RecursoNoEncontradoException(&quot;La venta con ID &quot; + request.getIdVenta() + &quot; no fue encontrada.&quot;);</span>
+            }
+<span class="nc" id="L38">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L39">            throw new RecursoNoEncontradoException(&quot;La venta con ID &quot; + request.getIdVenta() + &quot; no existe.&quot;);</span>
+<span class="nc" id="L40">        } catch (FeignException e) {</span>
+<span class="nc" id="L41">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms-venta: &quot; + e.getMessage());</span>
+<span class="nc" id="L42">        } catch (Exception e) {</span>
+<span class="nc" id="L43">            throw new RuntimeException(&quot;Error al validar la venta con ID &quot; + request.getIdVenta() + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L44">        }</span>
+
+        // 1.5 Validar que la venta esté PAGADA (idEstado = 3L)
+<span class="pc bpc" id="L47" title="1 of 4 branches missed.">        if (venta.getIdEstado() == null || !venta.getIdEstado().equals(3L)) {</span>
+<span class="fc" id="L48">            throw new IllegalArgumentException(&quot;La venta con ID &quot; + request.getIdVenta() + &quot; no está pagada (estado actual: &quot; + venta.getIdEstado() + &quot;). No se puede registrar el envío.&quot;);</span>
+        }
+
+        // 2. Validar que la dirección exista en ms_direccion
+        DireccionResponseDTO direccion;
+        try {
+<span class="fc" id="L54">            direccion = direccionFeignClient.obtenerDireccionPorId(request.getIdDireccion());</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">            if (direccion == null) {</span>
+<span class="nc" id="L56">                throw new RecursoNoEncontradoException(&quot;La dirección con ID &quot; + request.getIdDireccion() + &quot; no fue encontrada.&quot;);</span>
+            }
+<span class="nc" id="L58">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L59">            throw new RecursoNoEncontradoException(&quot;La dirección con ID &quot; + request.getIdDireccion() + &quot; no existe.&quot;);</span>
+<span class="nc" id="L60">        } catch (FeignException e) {</span>
+<span class="nc" id="L61">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms-direccion: &quot; + e.getMessage());</span>
+<span class="nc" id="L62">        } catch (Exception e) {</span>
+<span class="nc" id="L63">            throw new RuntimeException(&quot;Error al validar la dirección con ID &quot; + request.getIdDireccion() + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L64">        }</span>
+
+        // 3. Verificar si ya existe un despacho registrado para esta venta
+<span class="fc" id="L67">        Optional&lt;Envio&gt; envioExistente = envioRepository.findByIdVenta(request.getIdVenta());</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (envioExistente.isPresent()) {</span>
+<span class="nc" id="L69">            throw new IllegalArgumentException(&quot;Ya existe un despacho registrado para la venta con ID: &quot; + request.getIdVenta());</span>
+        }
+
+        // 4. Crear y guardar el registro de envío
+<span class="fc" id="L73">        Envio envio = new Envio();</span>
+<span class="fc" id="L74">        envio.setIdVenta(request.getIdVenta());</span>
+<span class="fc" id="L75">        envio.setIdDireccion(request.getIdDireccion());</span>
+<span class="fc" id="L76">        envio.setNumeroSeguimiento(request.getNumeroSeguimiento());</span>
+<span class="fc" id="L77">        envio.setEmpresaEnvio(request.getEmpresaEnvio());</span>
+<span class="fc" id="L78">        envio.setFechaDespacho(request.getFechaDespacho());</span>
+<span class="fc" id="L79">        envio.setIdEstado(1L); // 1L represents 'PENDING' or 'PREPARING' shipping state</span>
+
+<span class="fc" id="L81">        Envio saved = envioRepository.save(envio);</span>
+<span class="fc" id="L82">        return mapToResponse(saved);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;EnvioResponseDTO&gt; obtenerEnvioPorVenta(Long idVenta) {
+<span class="nc" id="L88">        return envioRepository.findByIdVenta(idVenta).map(this::mapToResponse);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;EnvioResponseDTO&gt; obtenerEnvioPorId(Long id) {
+<span class="fc" id="L94">        return envioRepository.findById(id).map(this::mapToResponse);</span>
+    }
+
+    private EnvioResponseDTO mapToResponse(Envio envio) {
+<span class="fc" id="L98">        return new EnvioResponseDTO(</span>
+<span class="fc" id="L99">            envio.getId(),</span>
+<span class="fc" id="L100">            envio.getIdVenta(),</span>
+<span class="fc" id="L101">            envio.getIdDireccion(),</span>
+<span class="fc" id="L102">            envio.getNumeroSeguimiento(),</span>
+<span class="fc" id="L103">            envio.getEmpresaEnvio(),</span>
+<span class="fc" id="L104">            envio.getFechaDespacho(),</span>
+<span class="fc" id="L105">            envio.getIdEstado()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

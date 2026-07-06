@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PagoServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pago</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.pago.service.impl</a> &gt; <span class="el_source">PagoServiceImpl.java</span></div><h1>PagoServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.pago.service.impl;
+
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import cl.syst3m64.pago.dto.PagoRequestDTO;
+import cl.syst3m64.pago.dto.PagoResponseDTO;
+import cl.syst3m64.pago.dto.VentaResponseDTO;
+import cl.syst3m64.pago.client.VentaFeignClient;
+import cl.syst3m64.pago.exception.RecursoNoEncontradoException;
+import cl.syst3m64.pago.exception.ServicioExternoNoDisponibleException;
+import cl.syst3m64.pago.model.Pago;
+import cl.syst3m64.pago.repository.PagoRepository;
+import cl.syst3m64.pago.service.PagoService;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class PagoServiceImpl implements PagoService {
+
+    private final PagoRepository pagoRepository;
+    private final VentaFeignClient ventaFeignClient;
+
+    @Override
+    @Transactional
+    public PagoResponseDTO registrarPago(PagoRequestDTO request) {
+        // 1. Validar que la venta exista en ms_venta
+        VentaResponseDTO venta;
+        try {
+<span class="fc" id="L31">            venta = ventaFeignClient.obtenerVentaPorId(request.getIdVenta());</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">            if (venta == null) {</span>
+<span class="nc" id="L33">                throw new RecursoNoEncontradoException(&quot;La venta con ID &quot; + request.getIdVenta() + &quot; no fue encontrada.&quot;);</span>
+            }
+<span class="nc" id="L35">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L36">            throw new RecursoNoEncontradoException(&quot;La venta con ID &quot; + request.getIdVenta() + &quot; no existe.&quot;);</span>
+<span class="nc" id="L37">        } catch (FeignException e) {</span>
+<span class="nc" id="L38">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms-venta: &quot; + e.getMessage());</span>
+<span class="nc" id="L39">        } catch (Exception e) {</span>
+<span class="nc" id="L40">            throw new RuntimeException(&quot;Error al validar la venta con ID &quot; + request.getIdVenta() + &quot;: &quot; + e.getMessage());</span>
+<span class="fc" id="L41">        }</span>
+
+        // 2. Validar que el monto del pago coincida con el total de la venta
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (request.getMonto().compareTo(venta.getTotal()) != 0) {</span>
+<span class="fc" id="L45">            throw new IllegalArgumentException(&quot;El monto de pago (&quot; + request.getMonto() + &quot;) no coincide con el total de la venta (&quot; + venta.getTotal() + &quot;).&quot;);</span>
+        }
+
+        // 3. Verificar si ya existe un pago para esta venta
+<span class="fc" id="L49">        Optional&lt;Pago&gt; pagoExistente = pagoRepository.findByIdVenta(request.getIdVenta());</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (pagoExistente.isPresent()) {</span>
+<span class="nc" id="L51">            throw new IllegalArgumentException(&quot;Ya existe un pago registrado para la venta con ID: &quot; + request.getIdVenta());</span>
+        }
+
+        // 4. Crear y guardar el pago
+<span class="fc" id="L55">        Pago pago = new Pago();</span>
+<span class="fc" id="L56">        pago.setIdVenta(request.getIdVenta());</span>
+<span class="fc" id="L57">        pago.setMonto(request.getMonto());</span>
+<span class="fc" id="L58">        pago.setMetodoPago(request.getMetodoPago());</span>
+<span class="fc" id="L59">        pago.setTransaccionId(request.getTransaccionId());</span>
+<span class="fc" id="L60">        pago.setFechaPago(request.getFechaPago());</span>
+<span class="fc" id="L61">        pago.setIdEstado(1L); // 1L represents 'APPROVED' or 'SUCCESS' payment state</span>
+
+<span class="fc" id="L63">        Pago saved = pagoRepository.save(pago);</span>
+
+        // 5. Actualizar el estado de la venta a PAGADA (3L)
+        try {
+<span class="fc" id="L67">            ventaFeignClient.actualizarEstadoVenta(request.getIdVenta(), 3L);</span>
+<span class="nc" id="L68">        } catch (FeignException e) {</span>
+<span class="nc" id="L69">            throw new ServicioExternoNoDisponibleException(&quot;No se pudo actualizar el estado de la venta en el microservicio ms-venta: &quot; + e.getMessage());</span>
+<span class="fc" id="L70">        }</span>
+
+<span class="fc" id="L72">        return mapToResponse(saved);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;PagoResponseDTO&gt; obtenerPagoPorVenta(Long idVenta) {
+<span class="nc" id="L78">        return pagoRepository.findByIdVenta(idVenta).map(this::mapToResponse);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;PagoResponseDTO&gt; obtenerPagoPorId(Long id) {
+<span class="fc" id="L84">        return pagoRepository.findById(id).map(this::mapToResponse);</span>
+    }
+
+    private PagoResponseDTO mapToResponse(Pago pago) {
+<span class="fc" id="L88">        return new PagoResponseDTO(</span>
+<span class="fc" id="L89">            pago.getId(),</span>
+<span class="fc" id="L90">            pago.getIdVenta(),</span>
+<span class="fc" id="L91">            pago.getMonto(),</span>
+<span class="fc" id="L92">            pago.getMetodoPago(),</span>
+<span class="fc" id="L93">            pago.getTransaccionId(),</span>
+<span class="fc" id="L94">            pago.getFechaPago(),</span>
+<span class="fc" id="L95">            pago.getIdEstado()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

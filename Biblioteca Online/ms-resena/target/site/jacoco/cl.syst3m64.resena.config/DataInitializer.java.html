@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataInitializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ms-resena</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.resena.config</a> &gt; <span class="el_source">DataInitializer.java</span></div><h1>DataInitializer.java</h1><pre class="source lang-java linenums">package cl.syst3m64.resena.config;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import cl.syst3m64.resena.model.Resena;
+import cl.syst3m64.resena.repository.ResenaRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+
+<span class="nc" id="L11">@Slf4j</span>
+@Component
+@RequiredArgsConstructor
+public class DataInitializer implements CommandLineRunner {
+
+    private final ResenaRepository resenaRepository;
+
+    @Override
+    public void run(String... args) {
+<span class="nc" id="L20">        log.info(&quot;Iniciando DataInitializer de ms-resena...&quot;);</span>
+
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        if (resenaRepository.count() == 0) {</span>
+<span class="nc" id="L23">            log.info(&quot;Inicializando resenas semilla...&quot;);</span>
+
+<span class="nc" id="L25">            resenaRepository.save(new Resena(</span>
+                null,
+<span class="nc" id="L27">                1L,</span>
+<span class="nc" id="L28">                1L,</span>
+                &quot;Excelente libro&quot;,
+                &quot;Una lectura obligatoria. Me encantó la trama y el desarrollo de personajes.&quot;,
+<span class="nc" id="L31">                5,</span>
+<span class="nc" id="L32">                LocalDate.now(),</span>
+                &quot;ACTIVO&quot;
+            ));
+
+<span class="nc" id="L36">            resenaRepository.save(new Resena(</span>
+                null,
+<span class="nc" id="L38">                2L,</span>
+<span class="nc" id="L39">                1L,</span>
+                &quot;Muy bueno&quot;,
+                &quot;El ritmo del libro es rápido y entretenido, ideal para leer el fin de semana.&quot;,
+<span class="nc" id="L42">                4,</span>
+<span class="nc" id="L43">                LocalDate.now(),</span>
+                &quot;ACTIVO&quot;
+            ));
+
+<span class="nc" id="L47">            log.info(&quot;Resenas de prueba inicializadas correctamente.&quot;);</span>
+        } else {
+<span class="nc" id="L49">            log.info(&quot;ms-resena ya cuenta con datos. Omitiendo inicialización.&quot;);</span>
+        }
+<span class="nc" id="L51">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DireccionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">direccion</a> &gt; <a href="index.source.html" class="el_package">cl.syst3m64.direccion.service.impl</a> &gt; <span class="el_source">DireccionServiceImpl.java</span></div><h1>DireccionServiceImpl.java</h1><pre class="source lang-java linenums">package cl.syst3m64.direccion.service.impl;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import cl.syst3m64.direccion.dto.ComunaResponseDTO;
+import cl.syst3m64.direccion.dto.DireccionRequestDTO;
+import cl.syst3m64.direccion.dto.DireccionResponseDTO;
+import cl.syst3m64.direccion.dto.RegionResponseDTO;
+import cl.syst3m64.direccion.client.EstadoFeignClient;
+import cl.syst3m64.direccion.client.UsuarioFeignClient;
+import cl.syst3m64.direccion.exception.RecursoNoEncontradoException;
+import cl.syst3m64.direccion.exception.ServicioExternoNoDisponibleException;
+import cl.syst3m64.direccion.model.Comuna;
+import cl.syst3m64.direccion.model.Direccion;
+import cl.syst3m64.direccion.repository.ComunaRepository;
+import cl.syst3m64.direccion.repository.DireccionRepository;
+import cl.syst3m64.direccion.service.DireccionService;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class DireccionServiceImpl implements DireccionService {
+
+    private final DireccionRepository direccionRepository;
+    private final ComunaRepository comunaRepository;
+    private final UsuarioFeignClient usuarioFeignClient;
+    private final EstadoFeignClient estadoFeignClient;
+
+    @Override
+    public void validarUsuario(Long idUsuario) {
+        try {
+<span class="fc" id="L37">            usuarioFeignClient.obtenerUsuarioPorId(idUsuario);</span>
+<span class="nc" id="L38">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L39">            throw new RecursoNoEncontradoException(&quot;El usuario con ID: &quot; + idUsuario + &quot; no existe&quot;);</span>
+<span class="nc" id="L40">        } catch (FeignException e) {</span>
+<span class="nc" id="L41">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms_usuario: &quot; + e.getMessage());</span>
+<span class="fc" id="L42">        }</span>
+<span class="fc" id="L43">    }</span>
+
+    @Override
+    public void validarEstado(Long idEstado) {
+        try {
+<span class="fc" id="L48">            estadoFeignClient.obtenerEstadoPorId(idEstado);</span>
+<span class="nc" id="L49">        } catch (FeignException.NotFound e) {</span>
+<span class="nc" id="L50">            throw new RecursoNoEncontradoException(&quot;El estado con ID: &quot; + idEstado + &quot; no existe&quot;);</span>
+<span class="nc" id="L51">        } catch (FeignException e) {</span>
+<span class="nc" id="L52">            throw new ServicioExternoNoDisponibleException(&quot;No se puede conectar con el microservicio ms_estado: &quot; + e.getMessage());</span>
+<span class="fc" id="L53">        }</span>
+<span class="fc" id="L54">    }</span>
+
+    @Override
+    public List&lt;DireccionResponseDTO&gt; obtenerDirecciones() {
+<span class="fc" id="L58">        return direccionRepository.findAll().stream()</span>
+<span class="fc" id="L59">                .map(this::mapToResponseDTO)</span>
+<span class="fc" id="L60">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Optional&lt;DireccionResponseDTO&gt; obtenerDireccionPorId(Long id) {
+<span class="fc" id="L65">        return direccionRepository.findById(id).map(this::mapToResponseDTO);</span>
+    }
+
+    @Override
+    public DireccionResponseDTO crearDireccion(DireccionRequestDTO direccionDto) {
+<span class="fc" id="L70">        validarUsuario(direccionDto.getIdUsuario());</span>
+<span class="fc" id="L71">        validarEstado(direccionDto.getIdEstado());</span>
+
+<span class="fc" id="L73">        Comuna comuna = comunaRepository.findById(direccionDto.getIdComuna())</span>
+<span class="pc" id="L74">                .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Comuna no encontrada con ID: &quot; + direccionDto.getIdComuna()));</span>
+
+<span class="fc" id="L76">        Direccion direccion = new Direccion();</span>
+<span class="fc" id="L77">        direccion.setCalle(direccionDto.getCalle());</span>
+<span class="fc" id="L78">        direccion.setNumero(direccionDto.getNumero());</span>
+<span class="fc" id="L79">        direccion.setIdUsuario(direccionDto.getIdUsuario());</span>
+<span class="fc" id="L80">        direccion.setIdComuna(comuna);</span>
+<span class="fc" id="L81">        direccion.setIdEstado(direccionDto.getIdEstado());</span>
+
+<span class="fc" id="L83">        return mapToResponseDTO(direccionRepository.save(direccion));</span>
+    }
+
+    @Override
+    public DireccionResponseDTO actualizarDireccion(Long id, DireccionRequestDTO direccionDto) {
+<span class="nc" id="L88">        validarUsuario(direccionDto.getIdUsuario());</span>
+<span class="nc" id="L89">        validarEstado(direccionDto.getIdEstado());</span>
+
+<span class="nc" id="L91">        return direccionRepository.findById(id).map(existing -&gt; {</span>
+<span class="nc" id="L92">            Comuna comuna = comunaRepository.findById(direccionDto.getIdComuna())</span>
+<span class="nc" id="L93">                    .orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Comuna no encontrada con ID: &quot; + direccionDto.getIdComuna()));</span>
+<span class="nc" id="L94">            existing.setCalle(direccionDto.getCalle());</span>
+<span class="nc" id="L95">            existing.setNumero(direccionDto.getNumero());</span>
+<span class="nc" id="L96">            existing.setIdUsuario(direccionDto.getIdUsuario());</span>
+<span class="nc" id="L97">            existing.setIdComuna(comuna);</span>
+<span class="nc" id="L98">            existing.setIdEstado(direccionDto.getIdEstado());</span>
+<span class="nc" id="L99">            return mapToResponseDTO(direccionRepository.save(existing));</span>
+<span class="nc" id="L100">        }).orElseThrow(() -&gt; new RecursoNoEncontradoException(&quot;Direccion no encontrada con ID: &quot; + id));</span>
+    }
+
+    @Override
+    public void eliminarDireccion(Long id) {
+<span class="nc" id="L105">        direccionRepository.deleteById(id);</span>
+<span class="nc" id="L106">    }</span>
+
+    private DireccionResponseDTO mapToResponseDTO(Direccion direccion) {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (direccion == null) return null;</span>
+
+<span class="fc" id="L111">        ComunaResponseDTO comunaDTO = null;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (direccion.getIdComuna() != null) {</span>
+<span class="fc" id="L113">            Comuna comuna = direccion.getIdComuna();</span>
+<span class="fc" id="L114">            RegionResponseDTO regionDTO = null;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">            if (comuna.getIdRegion() != null) {</span>
+<span class="fc" id="L116">                regionDTO = new RegionResponseDTO(comuna.getIdRegion().getId(), comuna.getIdRegion().getNombre());</span>
+            }
+<span class="fc" id="L118">            comunaDTO = new ComunaResponseDTO(comuna.getId(), comuna.getNombre(), regionDTO);</span>
+        }
+
+<span class="fc" id="L121">        return new DireccionResponseDTO(</span>
+<span class="fc" id="L122">                direccion.getId(),</span>
+<span class="fc" id="L123">                direccion.getCalle(),</span>
+<span class="fc" id="L124">                direccion.getNumero(),</span>
+<span class="fc" id="L125">                direccion.getIdUsuario(),</span>
+                comunaDTO,
+<span class="fc" id="L127">                direccion.getIdEstado()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ms_categoria,cl.syst3m64.categorias.service.impl,CategoriaServiceImpl,0,92,0,0,0,18,0,8,0,8
+ms_categoria,cl.syst3m64.categorias.config,DataInitializer,4,57,1,1,2,9,1,2,0,2
+ms_categoria,cl.syst3m64.categorias,CategoriasApplication,5,3,0,0,2,1,1,1,1,1
+ms_categoria,cl.syst3m64.categorias.exception,RecursoNoEncontradoException,0,4,0,0,0,2,0,1,0,1
+ms_categoria,cl.syst3m64.categorias.exception,ServicioExternoNoDisponibleException,4,0,0,0,2,0,1,0,1,0
+ms_categoria,cl.syst3m64.categorias.exception,GlobalExceptionHandler,24,33,0,0,3,5,3,4,3,4
+ms_categoria,cl.syst3m64.categorias.controller,CategoriaController,0,75,0,0,0,14,0,9,0,9
